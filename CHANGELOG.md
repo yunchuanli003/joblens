@@ -3,6 +3,14 @@
 版本号同时出现在 `manifest.json` 与 `package.json`，`npm run check` 会校验二者一致。
 每次改动都写清「用户看到了什么 → 根因是什么 → 改在哪」，方便回滚和写简历/面试时复盘。
 
+## 未发布（仓库化，不改变扩展行为）
+
+- README 拆成首屏（做什么 / 不做什么 / 快速开始 / 三个关键设计），细节下沉到 `docs/USAGE.md`、`docs/ARCHITECTURE.md`、`docs/DESIGN.md`。
+- 「为什么放弃 CDP」及检测面分析从 README 首屏移到 `docs/DESIGN.md`：这是设计取舍，不是功能介绍。
+- 补 `LICENSE`（MIT）；`package.json` 补 `license` / `keywords`。
+- `scripts/check.mjs` 增加两项自检：文档里的相对链接是否可达、README 徽章声明的测试数与实际是否一致。
+- 新增 `.github/workflows/ci.yml`（`npm ci` → `verify` → `build` → 上传 `dist/unpacked`）与 `package-lock.json`。
+
 ## 1.4.7
 
 - **修**：点开卡片后「面板没变化」导致 `未读到 JD`、一轮 0 份。根因是 `readPanel()` 只取页面里第一个带 `job-detail` 字样的元素，而那通常是个永不变化的壳（真机上同类元素有 8 个）。

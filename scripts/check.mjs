@@ -52,6 +52,35 @@ const pkg = readJson('package.json');
 if (manifest.version === pkg.version) ok('manifest 与 package.json 同为 ' + manifest.version);
 else bad(`版本不一致：manifest ${manifest.version} / package.json ${pkg.version}`);
 
+console.log('== 文档 ==');
+if (pkg.license === 'MIT' && fs.existsSync(path.join(ROOT, 'LICENSE'))) ok('LICENSE（MIT）');
+else bad('LICENSE 缺失或 package.json 的 license 不是 MIT');
+
+/* 文档经常被挪来挪去，链接比内容更容易先坏。只查相对路径的 .md / 目录，
+   http(s) 链接不联网校验（自检必须是离线的）。 */
+const docs = ['README.md', 'CHANGELOG.md', 'docs/USAGE.md', 'docs/ARCHITECTURE.md', 'docs/DESIGN.md'];
+let links = 0;
+for (const doc of docs) {
+  const full = path.join(ROOT, doc);
+  if (!fs.existsSync(full)) { bad('缺少文档：' + doc); continue; }
+  const text = fs.readFileSync(full, 'utf8');
+  const re = /\]\(([^)\s]+\.(?:md|json|js|mjs)|[^)\s]+\/)\)/g;
+  let m;
+  while ((m = re.exec(text))) {
+    const href = m[1];
+    if (/^(https?:|mailto:|#)/.test(href)) continue;
+    links++;
+    const target = path.resolve(path.dirname(full), href.replace(/[?#].*$/, ''));
+    if (!fs.existsSync(target)) bad(`${doc} 里的链接指向不存在的路径：${href}`);
+  }
+}
+ok(`相对链接 ${links} 条全部可达`);
+
+/* 徽章上的测试数会随时间失真，让人以为没跑测试 —— 直接和测试文件的断言数对不上就报警。 */
+const declared = (fs.readFileSync(path.join(ROOT, 'README.md'), 'utf8').match(/tests-(\d+)%20passed/) || [])[1];
+if (!declared) bad('README 徽章缺少 tests-N passed');
+else ok('README 声明测试数 ' + declared);
+
 if (fail.length) {
   console.log(`\n✗ ${fail.length} 项未通过`);
   process.exit(1);
