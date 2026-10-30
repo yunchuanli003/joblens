@@ -43,17 +43,22 @@ flowchart LR
 
 ## 快速开始
 
-```bash
-git clone <this-repo> && cd boss-scout
-npm run build          # 可选：产出 dist/unpacked 与 dist/boss-scout-1.4.7.zip
-```
+**装扩展**（不需要 Node，也不需要打包）：
 
 1. 打开 `chrome://extensions/`（Edge 用 `edge://extensions/`）→ 开启「开发人员模式」
-2. 「加载解压缩的扩展」→ 选择仓库根目录（或 `dist/unpacked/`）
+2. 「加载解压缩的扩展」→ 选择仓库根目录（或 [Release](../../releases) 里 zip 解压出的目录）
 3. 首次加载会自动打开设置页，填六项画像（**标题核心**最容易漏，它决定标题级误判挡不挡得住）
 4. 打开 `https://www.zhipin.com/web/geek/jobs?query=你的搜索词` → 点悬浮面板「扫描打分」
 
-不需要装依赖、不需要 Node、不需要 Python。扩展本体就是 `manifest.json` + 几个 js 文件；`npm` 只用于跑测试和打包。
+**想跑测试或自己打包**：
+
+```bash
+npm install            # 只为测试，扩展本身零依赖
+npm run verify         # 自检（语法 / manifest / 权限 / 版本 / 文档链接）+ 四套测试 485 项
+npm run build          # 产出 dist/unpacked（可直接加载）与 dist/boss-scout-1.4.7.zip
+```
+
+扩展本体就是 `manifest.json` + 几个 js 文件，没有构建步骤；上面的 `npm` 命令只服务于测试与发布。
 
 ## 三个值得一读的设计
 
