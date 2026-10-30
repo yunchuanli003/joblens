@@ -974,6 +974,12 @@
     SEL.card.forEach(function (s) { L.push('  ' + s + ' → ' + countSel(s)); });
     var cards = collectCards(document, null);
     L.push('解析出卡片 ' + cards.length + ' 个');
+    /* HR 活跃度只认明确档位，认不出就不筛。所以真机上「能不能读到」必须能自证：
+       一张都读不到时，多半是档位写在别的容器里，改 C.ACTIVITY_RULES 前先看这行。 */
+    var withAct = cards.filter(function (c) { return c.activity; });
+    L.push('卡片带活跃度 ' + withAct.length + '/' + cards.length +
+      (withAct.length ? '（例：' + withAct.slice(0, 3).map(function (c) { return c.activity; }).join('、') + '）'
+        : '（读不到就不按活跃度筛，不会误杀）'));
     var first = null;
     try { first = document.querySelector(SEL.card.join(',')); } catch (e) { first = null; }
     if (first) {

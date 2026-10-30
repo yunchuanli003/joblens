@@ -742,6 +742,23 @@ console.log('== 页面诊断 ==');
   ok('诊断报告详情面板命中', text.indexOf('readPanel()：命中') > 0);
   ok('诊断报告沟通按钮', text.indexOf('findChatButton()') > 0 && text.indexOf('startchat') > 0);
   ok('诊断标注卡片内元素', text.indexOf('[卡片内]') > 0);
+  /* 活跃度读不到时诊断必须自己说出来——否则用户只会看到「怎么没筛掉僵尸岗」 */
+  ok('诊断说明活跃度读不到', text.indexOf('卡片带活跃度 0/1') > 0, text.slice(0, 400));
+}
+
+{
+  const { E } = setup(`
+    <div class="job-card-wrap">
+      <a href="/job_detail/act9.html"><span class="job-name">EMC 测试</span></a>
+      <span class="boss-active">3日内活跃</span>
+    </div>
+    <div class="job-card-wrap">
+      <a href="/job_detail/act8.html"><span class="job-name">硬件测试</span></a>
+      <span class="boss-active">本月活跃</span>
+    </div>`);
+  const text = E.probePage();
+  ok('诊断统计带活跃度的卡片数', text.indexOf('卡片带活跃度 2/2') > 0, text.slice(0, 400));
+  ok('诊断给出档位样例', text.indexOf('3日内活跃') > 0 && text.indexOf('本月活跃') > 0, text.slice(0, 400));
 }
 
 {
