@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>boss-scout</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    width: 322px; margin: 0; padding: 0;
+    font: 13px/1.5 -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #14161a; color: #e6e8ec;
+  }
+  .head {
+    display: flex; align-items: center; gap: 8px;
+    padding: 12px 14px; background: #1a1d23; border-bottom: 1px solid #242932;
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: #5b6472; flex: 0 0 auto; }
+  .dot.on { background: #22c55e; box-shadow: 0 0 0 3px rgba(34,197,94,.18); }
+  .dot.warn { background: #f59e0b; }
+  .head b { font-size: 13px; font-weight: 600; letter-spacing: .3px; }
+  .head .site { margin-left: auto; font-size: 11px; color: #6b7280; }
+
+  .body { padding: 13px 14px; }
+  .stats { display: flex; gap: 8px; margin-bottom: 12px; }
+  .stats > div {
+    flex: 1; background: #1a1d23; border: 1px solid #242932;
+    border-radius: 9px; padding: 8px 0; text-align: center;
+  }
+  .stats em { display: block; font-style: normal; font-size: 19px; font-weight: 600; line-height: 1.2; }
+  .stats em.cap { color: #4ade80; }
+  .stats em.warn { color: #fbbf24; }
+  .stats span { display: block; font-size: 10.5px; color: #7c8494; margin-top: 2px; }
+
+  .bar { height: 4px; background: #242932; border-radius: 2px; overflow: hidden; margin-bottom: 13px; }
+  .bar > i { display: block; height: 100%; width: 0; background: #2563eb; transition: width .3s; }
+  .bar > i.warn { background: #f59e0b; }
+  .bar > i.full { background: #ef4444; }
+
+  .status {
+    font-size: 12px; color: #9aa3b2; background: #1a1d23; border-radius: 7px;
+    padding: 8px 10px; margin-bottom: 12px; min-height: 34px;
+    display: flex; align-items: center; line-height: 1.45;
+  }
+
+  .acts { display: flex; gap: 7px; margin-bottom: 9px; }
+  button {
+    flex: 1; padding: 9px 0; border-radius: 8px; border: 1px solid #2f3542;
+    background: #242932; color: #d5d9e0; font-size: 12.5px; cursor: pointer;
+    font-family: inherit; transition: .15s;
+  }
+  button:hover:not(:disabled) { background: #2f3542; color: #fff; }
+  button.primary { background: #2563eb; border-color: #2563eb; color: #fff; }
+  button.primary:hover:not(:disabled) { background: #3b74f0; }
+  button:disabled { opacity: .35; cursor: not-allowed; }
+
+  .foot {
+    display: flex; justify-content: space-between; align-items: center;
+    border-top: 1px solid #20242c; padding-top: 11px; font-size: 11.5px; color: #6b7280;
+  }
+  .foot a { color: #60a5fa; text-decoration: none; cursor: pointer; }
+  .foot a:hover { text-decoration: underline; }
+  .foot .sep { margin: 0 6px; color: #38404d; }
+
+  .rep { border-top: 1px solid #20242c; padding: 11px 14px 13px; }
+  .rep[hidden] { display: none; }
+  .rep-head { display: flex; align-items: center; margin-bottom: 8px; font-size: 12px; }
+  .rep-head b { font-weight: 600; }
+  .rep-head a { margin-left: auto; color: #60a5fa; cursor: pointer; font-size: 11.5px; }
+  .rep-head a:hover { text-decoration: underline; }
+  .rep textarea {
+    width: 100%; height: 210px; resize: vertical; box-sizing: border-box;
+    background: #0f1115; color: #cfd4dd; border: 1px solid #2f3542; border-radius: 7px;
+    padding: 8px; font: 10.5px/1.6 ui-monospace, Consolas, "Courier New", monospace;
+    white-space: pre;
+  }
+  .rep textarea:focus { outline: none; border-color: #3b74f0; }
+  .rep .tip { font-size: 10.5px; color: #6b7280; margin-top: 6px; }
+
+  .warnbox {
+    background: rgba(245, 158, 11, .1); border: 1px solid rgba(245, 158, 11, .35);
+    color: #fbbf24; border-radius: 8px; padding: 9px 11px; font-size: 11.5px;
+    line-height: 1.6; margin-bottom: 12px; display: none;
+  }
+  .warnbox.show { display: block; }
+</style>
+</head>
+<body>
+  <div class="head">
+    <span class="dot" id="dot"></span>
+    <b>boss-scout</b>
+    <span class="site" id="site">未在 BOSS 页面</span>
+  </div>
+
+  <div class="body">
+    <div class="stats">
+      <div><em id="s-today">0</em><span>今日已投</span></div>
+      <div><em id="s-session">0</em><span>本轮</span></div>
+      <div><em id="s-hit">0</em><span>推荐</span></div>
+    </div>
+    <div class="bar"><i id="bar"></i></div>
+
+    <div class="warnbox" id="warn"></div>
+    <div class="status" id="status">打开 BOSS 直聘岗位列表页后使用</div>
+
+    <div class="acts">
+      <button id="btn-scan">扫描打分</button>
+      <button id="btn-start" class="primary">开始投递</button>
+    </div>
+    <div class="acts" style="margin-bottom:12px">
+      <button id="btn-refresh">换一批</button>
+      <button id="btn-stop">停止</button>
+      <button id="btn-open">打开岗位页</button>
+    </div>
+
+    <div class="foot">
+      <span id="quota">额度 0 / 30</span>
+      <span><a id="btn-report">扫描报告</a><span class="sep">·</span><a id="btn-probe">页面诊断</a><span class="sep">·</span><a id="btn-opt">设置</a></span>
+    </div>
+  </div>
+
+  <div class="rep" id="rep" hidden>
+    <div class="rep-head"><b id="rep-title">扫描报告</b><a id="rep-x">收起</a></div>
+    <textarea id="rep-text" readonly spellcheck="false"></textarea>
+    <div class="tip" id="rep-tip">已全选，Ctrl+C 复制。报告含每个岗位的分数、结论与命中理由。</div>
+  </div>
+
+  <script src="core.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

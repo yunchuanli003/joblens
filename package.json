@@ -1,0 +1,23 @@
+{
+  "name": "boss-scout-ext",
+  "version": "1.4.7",
+  "private": true,
+  "description": "BOSS 直聘岗位筛选与半自动沟通的浏览器扩展（MV3）：本地打分、克制投递、全程可诊断",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/check.mjs",
+    "verify": "npm run check && npm test",
+    "test": "node tests/core.test.js && node tests/extract.test.js && node tests/flow.test.js && node tests/ui.test.js",
+    "test:core": "node tests/core.test.js",
+    "test:extract": "node tests/extract.test.js",
+    "test:flow": "node tests/flow.test.js",
+    "test:ui": "node tests/ui.test.js",
+    "icons": "python tests/make_icons.py"
+  },
+  "devDependencies": {
+    "jsdom": "^30.1.3"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

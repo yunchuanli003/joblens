@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>boss-scout 设置</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 0 0 80px;
+    font: 13.5px/1.6 -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #0f1115; color: #e6e8ec;
+  }
+  .top {
+    position: sticky; top: 0; z-index: 10;
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 28px; background: #14161a; border-bottom: 1px solid #242932;
+  }
+  .top h1 { margin: 0; font-size: 15px; font-weight: 600; letter-spacing: .3px; }
+  .top .desc { font-size: 12px; color: #6b7280; }
+  .top .spacer { flex: 1; }
+  .savebar { display: flex; align-items: center; gap: 10px; }
+  .savebar .state { font-size: 12px; color: #6b7280; min-width: 76px; text-align: right; }
+  .savebar .state.dirty { color: #fbbf24; }
+  .savebar .state.saved { color: #4ade80; }
+
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 22px 28px; }
+
+  .card {
+    background: #14161a; border: 1px solid #20242c; border-radius: 12px;
+    padding: 18px 20px; margin-bottom: 16px;
+  }
+  .card > h2 {
+    margin: 0 0 4px; font-size: 13.5px; font-weight: 600; color: #e6e8ec;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .card > h2 .tag {
+    font-size: 10.5px; font-weight: 500; color: #60a5fa; background: rgba(37,99,235,.14);
+    padding: 1px 7px; border-radius: 4px;
+  }
+  .card > p.hint { margin: 0 0 16px; font-size: 12px; color: #6b7280; line-height: 1.65; }
+
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 20px; }
+  .grid.one { grid-template-columns: 1fr; }
+  .grid.three { grid-template-columns: repeat(3, 1fr); }
+
+  .field label { display: block; font-size: 12px; color: #9aa3b2; margin-bottom: 5px; }
+  .field label .q {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 14px; height: 14px; border-radius: 50%; background: #242932; color: #6b7280;
+    font-size: 9.5px; margin-left: 4px; cursor: help;
+  }
+  .field input[type="text"], .field input[type="number"], .field textarea {
+    width: 100%; padding: 8px 10px; border-radius: 7px;
+    border: 1px solid #2f3542; background: #1a1d23; color: #e6e8ec;
+    font: inherit; font-size: 13px; outline: none; transition: border-color .15s;
+  }
+  .field input:focus, .field textarea:focus { border-color: #2563eb; }
+  .field textarea { resize: vertical; min-height: 70px; line-height: 1.6; }
+  .field .sub { font-size: 11px; color: #5b6472; margin-top: 4px; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; min-height: 18px; }
+  .chips i {
+    font-style: normal; font-size: 11px; padding: 1px 8px; border-radius: 4px;
+    background: #242932; color: #9aa3b2;
+  }
+  .chips i.hot { background: rgba(37,99,235,.18); color: #7aa9f7; }
+  .chips i.bad { background: rgba(239,68,68,.15); color: #f87171; }
+
+  .pace { display: flex; align-items: center; gap: 10px; margin: 16px 0 4px; flex-wrap: wrap; }
+  .pace .t { font-size: 12px; color: #9aa3b2; }
+  .pace .btns { display: flex; gap: 6px; }
+  .pace .btns button { padding: 5px 14px; font-size: 12px; border-radius: 6px; }
+  .pace .btns button.on { background: #2563eb; border-color: #2563eb; color: #fff; }
+  .pace .eta { font-size: 11.5px; color: #5b6472; }
+
+  .switch { display: flex; align-items: center; gap: 9px; padding: 9px 0; }
+  .switch input { width: 16px; height: 16px; accent-color: #2563eb; cursor: pointer; }
+  .switch label { font-size: 12.5px; color: #d5d9e0; cursor: pointer; }
+  .switch .sub { font-size: 11px; color: #5b6472; }
+
+  .danger { border-color: rgba(239,68,68,.3); }
+  .danger h2 { color: #f87171; }
+  button {
+    padding: 8px 16px; border-radius: 7px; border: 1px solid #2f3542;
+    background: #242932; color: #d5d9e0; font: inherit; font-size: 12.5px;
+    cursor: pointer; transition: .15s;
+  }
+  button:hover { background: #2f3542; color: #fff; }
+  button.primary { background: #2563eb; border-color: #2563eb; color: #fff; }
+  button.primary:hover { background: #3b74f0; }
+  button.danger-btn { border-color: rgba(239,68,68,.4); color: #f87171; }
+  button.danger-btn:hover { background: rgba(239,68,68,.12); color: #fca5a5; }
+
+  .note {
+    background: rgba(37,99,235,.08); border: 1px solid rgba(37,99,235,.25);
+    border-radius: 8px; padding: 10px 13px; font-size: 12px; color: #9db4d8; line-height: 1.7;
+    margin-bottom: 16px;
+  }
+  .note b { color: #bfd4f0; }
+  .toast {
+    position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%) translateY(20px);
+    background: #1f2937; border: 1px solid #374151; color: #e6e8ec;
+    padding: 9px 20px; border-radius: 8px; font-size: 13px; opacity: 0;
+    pointer-events: none; transition: .25s; z-index: 100;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="top">
+  <h1>boss-scout</h1>
+  <span class="desc">设置与求职画像</span>
+  <span class="spacer"></span>
+  <div class="savebar">
+    <span class="state" id="save-state">已保存</span>
+    <button class="primary" id="btn-save">保存</button>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="note">
+    <b>先填画像再扫描。</b>打分完全基于下面这些字段，不联网、不调用任何外部接口。
+    留空的字段不参与判断（例如不填城市就不做城市筛选）。
+  </div>
+
+  <!-- ========================= 求职画像 ========================= -->
+  <div class="card">
+    <h2>求职画像 <span class="tag">打分依据</span></h2>
+    <p class="hint">写得越具体，过滤越准。偏好词和排除词都支持用逗号、顿号或换行分隔。</p>
+
+    <div class="grid">
+      <div class="field">
+        <label for="p-role">求职方向（一句话）</label>
+        <input type="text" id="p-role" placeholder="例如：3 年 B 端 SaaS 产品运营">
+        <div class="sub">用于判断岗位标题是否与你的方向相关，+10 分</div>
+      </div>
+      <div class="field">
+        <label for="p-exp">工作年限</label>
+        <input type="text" id="p-exp" placeholder="例如：3 年">
+        <div class="sub">会写进招呼语</div>
+      </div>
+      <div class="field">
+        <label for="p-cities">目标城市</label>
+        <input type="text" id="p-cities" placeholder="杭州, 上海">
+        <div class="chips" id="chips-cities"></div>
+        <div class="sub">留空则不按城市筛选</div>
+      </div>
+      <div class="field">
+        <label for="p-minsal">薪资下限（K/月）</label>
+        <input type="number" id="p-minsal" min="0" step="1" placeholder="12">
+        <div class="sub">岗位薪资区间上限低于此值直接跳过；区间下限低于此值仅扣分提示</div>
+      </div>
+    </div>
+
+    <div class="grid" style="margin-top:14px">
+      <div class="field">
+        <label for="p-prefer">偏好关键词 <span class="q" title="出现在标题、公司名、标签或 JD 里都算命中，每命中一个 +9 分，最高 +36">?</span></label>
+        <textarea id="p-prefer" placeholder="产品运营, 用户运营, SaaS, B 端, 数据驱动, 增长"></textarea>
+        <div class="chips" id="chips-prefer"></div>
+      </div>
+      <div class="field">
+        <label for="p-avoid">回避关键词 <span class="q" title="每命中一个 -15 分，最高 -45">?</span></label>
+        <textarea id="p-avoid" placeholder="纯电销, 电话销售, 夜班, 轮班, 外包"></textarea>
+        <div class="chips" id="chips-avoid"></div>
+      </div>
+      <div class="field">
+        <label for="p-must">必要关键词 <span class="q" title="一个都没命中就直接淘汰，慎用">?</span></label>
+        <textarea id="p-must" placeholder="（留空表示不启用）"></textarea>
+        <div class="chips" id="chips-must"></div>
+      </div>
+      <div class="field">
+        <label for="p-rejectkw">个人信息排除词 <span class="q" title="命中即淘汰，不参与打分">?</span></label>
+        <textarea id="p-rejectkw" placeholder="（留空表示不启用）"></textarea>
+        <div class="chips" id="chips-rejectkw"></div>
+      </div>
+    </div>
+
+    <div class="grid one" style="margin-top:14px">
+      <div class="field">
+        <label for="p-core">标题核心词 <span class="q" title="岗位标题里出现其中一个，算「岗位名对得上」+10 分；一个都没出现，总分封顶 45 分、不进入推荐。专门用来挡「软件测试工程师」「电源销售」这类标题级误判。">?</span></label>
+        <textarea id="p-core" placeholder="例如：EMC, 电磁兼容, 可靠性, 硬件测试（留空表示不启用）"></textarea>
+        <div class="chips" id="chips-core"></div>
+      </div>
+    </div>
+
+    <div class="grid one" style="margin-top:14px">
+      <div class="field">
+        <label for="p-greet">招呼语模板 <span class="q" title="可用变量：{title} {company} {exp} {highlight} {salary} {area}">?</span></label>
+        <textarea id="p-greet" placeholder="留空使用默认模板：您好，看到贵司在招「{title}」，我有{exp}相关经验，过往做过{highlight}……"></textarea>
+        <div class="sub">留空则使用内置模板。建议手动写一版更贴合自己的，模板化的招呼语回复率明显更低。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================= 节奏与限额 ========================= -->
+  <div class="card">
+    <h2>节奏与限额 <span class="tag">风控关键</span></h2>
+    <p class="hint">
+      这是最容易出事的一组。经验数据：<b>单次大批量投递是最主要的受限原因</b>，
+      远比用什么技术手段重要。默认是「标准」档（一份 12~30 秒），觉得慢可以选「快」，
+      但不要靠拉长间隔来对冲数量——真正管用的是把单轮上限压下来。
+    </p>
+
+    <div class="grid three">
+      <div class="field">
+        <label for="l-session">单轮上限（份）</label>
+        <input type="number" id="l-session" min="1" max="50" step="1">
+        <div class="sub">跑完一轮就停，看完反馈再决定下一轮</div>
+      </div>
+      <div class="field">
+        <label for="l-daily">每日上限（份）</label>
+        <input type="number" id="l-daily" min="5" max="150" step="1">
+        <div class="sub">达线后当天不再投递</div>
+      </div>
+      <div class="field">
+        <label for="sf-breaker">连续失败熔断（次）</label>
+        <input type="number" id="sf-breaker" min="1" max="10" step="1">
+        <div class="sub">连续失败达到次数立即停止整轮</div>
+      </div>
+    </div>
+
+    <div class="pace">
+      <span class="t">节奏</span>
+      <div class="btns" id="pace-btns">
+        <button type="button" data-pace="fast">快</button>
+        <button type="button" data-pace="normal">标准</button>
+        <button type="button" data-pace="safe">保守</button>
+      </div>
+      <span class="eta" id="pace-eta"></span>
+    </div>
+
+    <div class="grid three" style="margin-top:10px">
+      <div class="field">
+        <label for="pc-dmin">投递间隔下限（秒）</label>
+        <input type="number" id="pc-dmin" min="5" max="600" step="1">
+      </div>
+      <div class="field">
+        <label for="pc-dmax">投递间隔上限（秒）</label>
+        <input type="number" id="pc-dmax" min="5" max="900" step="1">
+        <div class="sub">实际间隔在上限与下限之间随机取值</div>
+      </div>
+      <div class="field">
+        <label for="pc-jitter">随机抖动比例</label>
+        <input type="number" id="pc-jitter" min="0" max="0.8" step="0.05">
+        <div class="sub">0.25 表示 ±25% 浮动</div>
+      </div>
+    </div>
+
+    <div class="grid three" style="margin-top:14px">
+      <div class="field">
+        <label for="pc-every">每投几份休息一次</label>
+        <input type="number" id="pc-every" min="1" max="30" step="1">
+      </div>
+      <div class="field">
+        <label for="pc-rmin">休息时长下限（秒）</label>
+        <input type="number" id="pc-rmin" min="10" max="1800" step="10">
+      </div>
+      <div class="field">
+        <label for="pc-rmax">休息时长上限（秒）</label>
+        <input type="number" id="pc-rmax" min="10" max="3600" step="10">
+      </div>
+    </div>
+
+    <div class="grid" style="margin-top:14px">
+      <div class="field">
+        <label for="pc-jdmin">读 JD 停留下限（秒）</label>
+        <input type="number" id="pc-jdmin" min="1" max="60" step="1">
+      </div>
+      <div class="field">
+        <label for="pc-jdmax">读 JD 停留上限（秒）</label>
+        <input type="number" id="pc-jdmax" min="1" max="120" step="1">
+        <div class="sub">点开岗位后停留多久再决定，模拟真人阅读节奏</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================= 打分策略 ========================= -->
+  <div class="card">
+    <h2>打分策略</h2>
+    <p class="hint">分数 0~100，起始 50 分，按关键词加减。达到「推荐」阈值才会进入自动投递队列。</p>
+
+    <div class="grid three">
+      <div class="field">
+        <label for="s-approve">推荐阈值（≥ 分）</label>
+        <input type="number" id="s-approve" min="0" max="100" step="1">
+        <div class="sub">默认 62，调高更保守</div>
+      </div>
+      <div class="field">
+        <label for="s-review">待看阈值（≥ 分）</label>
+        <input type="number" id="s-review" min="0" max="100" step="1">
+        <div class="sub">默认 42，低于此分标为跳过</div>
+      </div>
+      <div class="field">
+        <label for="l-max">单次扫描上限（个）</label>
+        <input type="number" id="l-max" min="10" max="400" step="10">
+        <div class="sub">扫描阶段最多收集多少个岗位</div>
+      </div>
+    </div>
+
+    <div class="grid one" style="margin-top:14px">
+      <div class="field">
+        <label for="s-rejectkw">通用排除词（所有岗位生效）</label>
+        <textarea id="s-rejectkw" placeholder="保险, 贷款, 中介"></textarea>
+        <div class="chips" id="chips-srejectkw"></div>
+      </div>
+    </div>
+
+    <div style="margin-top:6px">
+      <div class="switch">
+        <input type="checkbox" id="sf-readjd">
+        <label for="sf-readjd">投递前先读 JD 复核
+          <span class="sub">— 点开岗位读全文后重新打分，不达阈值就跳过。会多一次点击，但准确率高很多</span>
+        </label>
+      </div>
+      <div class="switch">
+        <input type="checkbox" id="sf-confirm">
+        <label for="sf-confirm">逐条人工确认
+          <span class="sub">— 每投一份都弹确认框。最安全，但基本等于手动</span>
+        </label>
+      </div>
+      <div class="switch">
+        <input type="checkbox" id="sf-handoff">
+        <label for="sf-handoff">招呼语交给 BOSS 自动打招呼
+          <span class="sub">— 扩展点「立即沟通」进聊天页后就停手，不再自己发。已开 BOSS 自动打招呼时必须勾上，否则对方会收到两条</span>
+        </label>
+      </div>
+      <div class="switch">
+        <input type="checkbox" id="sf-autostart">
+        <label for="sf-autostart">进入岗位列表页自动扫描
+          <span class="sub">— 省掉「点扫描」这一步；只自动扫描，不会自动投递</span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================= 高级 ========================= -->
+  <div class="card">
+    <h2>高级</h2>
+    <p class="hint">如果发现薪资显示成乱码或明显不对，才需要动这里。</p>
+
+    <div class="grid">
+      <div class="field">
+        <label for="adv-pua">薪资字体映射（10 位数字） <span class="q" title="BOSS 把薪资数字换成私用区字符 U+E031~U+E03A，这里定义这 10 个码位依次对应哪 10 个数字">?</span></label>
+        <input type="text" id="adv-pua" maxlength="10" placeholder="0123456789">
+        <div class="sub">默认 0123456789。若薪资解密结果异常（如 111-111K），说明映射需要调整</div>
+      </div>
+      <div class="field">
+        <label for="l-scroll">扫描滚动轮数</label>
+        <input type="number" id="l-scroll" min="1" max="30" step="1">
+        <div class="sub">每轮向下滚动约 0.9 屏并等待加载</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================= 数据 ========================= -->
+  <div class="card danger">
+    <h2>数据</h2>
+    <p class="hint">投递记录与当日计数保存在浏览器本地（chrome.storage.local），不上传任何服务器。</p>
+    <div style="display:flex;gap:10px;align-items:center">
+      <button class="danger-btn" id="btn-reset">清空投递记录与今日计数</button>
+      <span class="sub" id="records-info" style="font-size:11.5px;color:#5b6472"></span>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="core.js"></script>
+<script src="options.js"></script>
+</body>
+</html>
