@@ -1,6 +1,6 @@
 {
   "name": "boss-scout-ext",
-  "version": "1.4.7",
+  "version": "1.5.0",
   "description": "BOSS 直聘岗位筛选与半自动沟通的浏览器扩展（MV3）：本地打分、克制投递、全程可诊断",
   "license": "MIT",
   "private": true,

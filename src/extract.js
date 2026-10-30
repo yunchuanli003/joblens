@@ -136,6 +136,12 @@
 
     var tags = qa(el, SEL.tags).map(txt).filter(Boolean).slice(0, 8);
 
+    /* HR 活跃度：卡片右侧通常写着「今日活跃 / 3日内活跃 / 本月活跃」。
+       用 textContent 而不是 innerText 扫——读 innerText 会触发重排，而卡片
+       有几十张，这一遍只是正则匹配，用不着排版结果。认不出就是空串。 */
+    var act = null;
+    try { act = C.activityOf(el.textContent || ''); } catch (e) { act = null; }
+
     return {
       el: el,
       id: jobIdFromHref(href) || el.getAttribute('data-jobid') || '',
@@ -147,6 +153,9 @@
       company: txt(q(el, SEL.company)),
       area: txt(q(el, SEL.area)),
       tags: tags,
+      /* 只留原始短语（如「1月内活跃」）。换算成天数的事交给 core，
+         这里不替业务做判断，也不让 extract 依赖打分阈值。 */
+      activity: act ? act.phrase : '',
       text: '',
       decision: null
     };
@@ -228,10 +237,21 @@
   /* 详情页是服务端渲染的：JD 正文就在 .job-sec-text 里。直接请求这份 HTML
      在本地解析，既不用点卡片、也不用等右侧面板，更不会把脚本上下文导航掉。
      这是「点开后面板没变化」时最稳的一条路。 */
-  function jdFromHtml(html) {
-    if (!html || typeof html !== 'string') return '';
+  function parseJdHtml(html) {
+    var out = { text: '', activity: '' };
+    if (!html || typeof html !== 'string') return out;
     var doc;
-    try { doc = new DOMParser().parseFromString(html, 'text/html'); } catch (e) { return ''; }
+    try { doc = new DOMParser().parseFromString(html, 'text/html'); } catch (e) { return out; }
+
+    /* HR 活跃度在详情页里也有一份（招聘者卡片上那句「近期活跃 / 今日活跃」）。
+       卡片上没写、或卡片被合并刷新过时，这里能补上——但只有明确档位才用得上。 */
+    var act = null;
+    try {
+      var head = doc.querySelector('[class*="job-boss-info"], [class*="boss-info"], .job-detail-box, [class*="job-detail"]');
+      act = C.activityOf((head && head.textContent) || '');
+    } catch (e) { act = null; }
+    if (act) out.activity = act.phrase;
+
     var secs = [];
     try { secs = Array.prototype.slice.call(doc.querySelectorAll(PANEL_JD_SEL)); } catch (e) { secs = []; }
     var parts = [];
@@ -239,38 +259,43 @@
       var t = String(secs[i].textContent || '').replace(/\s+/g, ' ').trim();
       if (t) parts.push(t);
     }
-    var out = parts.join(' ');
-    if (out.length >= 30) return out;
+    var joined = parts.join(' ');
+    if (joined.length >= 30) { out.text = joined; return out; }
 
     /* 有的版本不用 .job-sec-text，JD 直接摊在容器里：按内容特征再捞一遍 */
     var loose = [];
     try { loose = Array.prototype.slice.call(doc.querySelectorAll('[class*="job-detail"], [class*="job-sec"]')); } catch (e) { loose = []; }
     for (var j = 0; j < loose.length; j++) {
       var t2 = String(loose[j].textContent || '').replace(/\s+/g, ' ').trim();
-      if (t2.length > 60 && /岗位职责|任职要求|职位描述|工作内容|岗位要求/.test(t2)) return t2;
+      if (t2.length > 60 && /岗位职责|任职要求|职位描述|工作内容|岗位要求/.test(t2)) { out.text = t2; return out; }
     }
-    return '';
+    return out;
   }
 
-  /* 返回 { text, why }。why 只用于诊断，不参与打分。 */
+  /* 只要 JD 正文的老接口：测试和调用方都不关心活跃度时用它 */
+  function jdFromHtml(html) {
+    return parseJdHtml(html).text;
+  }
+
+  /* 返回 { text, why, activity }。why 只用于诊断，不参与打分。 */
   function fetchJd(id) {
-    if (!id) return Promise.resolve({ text: '', why: 'no_id' });
-    if (typeof fetch !== 'function') return Promise.resolve({ text: '', why: 'no_fetch' });
+    if (!id) return Promise.resolve({ text: '', why: 'no_id', activity: '' });
+    if (typeof fetch !== 'function') return Promise.resolve({ text: '', why: 'no_fetch', activity: '' });
     var url = '/job_detail/' + encodeURIComponent(id) + '.html';
     return fetch(url, {
       credentials: 'include',
       headers: { 'Accept': 'text/html,application/xhtml+xml' }
     })
       .then(function (r) {
-        if (!r || !r.ok) return { text: '', why: 'http_' + (r ? r.status : 0) };
+        if (!r || !r.ok) return { text: '', why: 'http_' + (r ? r.status : 0), activity: '' };
         return r.text().then(function (html) {
           var head = String(html || '').slice(0, 3000);
-          if (/安全验证|请完成验证|访问受限|verify-slider/i.test(head)) return { text: '', why: 'verify' };
-          var t = jdFromHtml(html);
-          return t ? { text: t, why: 'ok' } : { text: '', why: 'no_sec' };
+          if (/安全验证|请完成验证|访问受限|verify-slider/i.test(head)) return { text: '', why: 'verify', activity: '' };
+          var p = parseJdHtml(html);
+          return { text: p.text, why: p.text ? 'ok' : 'no_sec', activity: p.activity };
         });
       })
-      .catch(function () { return { text: '', why: 'err' }; });
+      .catch(function () { return { text: '', why: 'err', activity: '' }; });
   }
 
   /* ---------------------------------------------------------------- 按钮 */
@@ -1042,6 +1067,7 @@
     readPanel: readPanel,
     panelCands: panelCands,
     jdFromHtml: jdFromHtml,
+    parseJdHtml: parseJdHtml,
     fetchJd: fetchJd,
     findChatButton: findChatButton,
     isContactedText: isContactedText,

@@ -225,6 +225,7 @@ function loadPage(htmlFile, jsFiles, stored, opts) {
       role_summary: '3 年 SaaS 产品运营',
       experience: '3 年',
       min_salary_k: 12,
+      activity_max_idle_days: 14,
       target_cities: ['杭州', '上海'],
       prefer: ['产品运营', 'SaaS'],
       avoid: ['电销'],
@@ -243,6 +244,7 @@ function loadPage(htmlFile, jsFiles, stored, opts) {
   eq('求职方向回填', $('p-role').value, '3 年 SaaS 产品运营');
   eq('目标城市回填', $('p-cities').value, '杭州, 上海');
   eq('薪资下限回填', String($('p-minsal').value), '12');
+  eq('HR 活跃门槛回填', String($('p-idle').value), '14');
   eq('单轮上限回填', String($('l-session').value), '8');
   eq('每日上限回填', String($('l-daily').value), '30');
   eq('投递间隔下限回填', String($('pc-dmin').value), '25');
@@ -274,6 +276,9 @@ function loadPage(htmlFile, jsFiles, stored, opts) {
   $('p-prefer').dispatchEvent(new ow.Event('input', { bubbles: true }));
   eq('chips 随输入更新', $('chips-prefer').querySelectorAll('i').length, 3);
 
+  $('p-idle').value = '7';
+  $('p-idle').dispatchEvent(new ow.Event('input', { bubbles: true }));
+
   $('p-core').value = '产品运营, 用户运营';
   $('p-core').dispatchEvent(new ow.Event('input', { bubbles: true }));
   eq('标题核心词 chips 渲染', $('chips-core').querySelectorAll('i').length, 2);
@@ -290,6 +295,7 @@ function loadPage(htmlFile, jsFiles, stored, opts) {
   eq('每日上限已更新', o.stored.config.limits.daily_apply_max, 20);
   eq('偏好词已更新', o.stored.profile.prefer.join(','), '产品运营,SaaS,增长');
   eq('标题核心词已写入', o.stored.profile.title_core.join(','), '产品运营,用户运营');
+  eq('HR 活跃门槛已写入', o.stored.profile.activity_max_idle_days, 7);
   eq('自动扫描开关已写入', o.stored.config.safety.auto_start, true);
   eq('招呼语交给 BOSS 已写入', o.stored.config.safety.handoff_greeting, true);
   eq('未编辑字段保持不变', o.stored.config.pacing.delay_min_sec, 25);

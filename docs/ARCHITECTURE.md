@@ -92,6 +92,10 @@ sequenceDiagram
     EX->>SITE: 点击容器 → li → 标题 → 详情链接
     EX-->>CT: readPanel()（多候选择优）
   end
+  CT->>CT: HR 活跃度复核（卡片 + 详情页；任一条说最近来过就放行）
+  alt 明确超期（超过 activity_max_idle_days）
+    CT->>CT: 记 stale_hr 跳过，连那 2~5 秒都不等
+  end
   CT->>CT: 停留 2~5 秒（读 JD 的节奏）
   CT->>CO: evaluate(job, profile, jdText) 二次打分
   alt 不达阈值
@@ -142,7 +146,7 @@ sequenceDiagram
 | 键 | 内容 | 谁写 |
 |---|---|---|
 | `config` | `limits`（8 / 30 / 滚动轮数 / 面板等待）、`pacing`（间隔、休息、读 JD 停留）、`safety`（熔断阈值、`handoff_greeting`）、`scoring`（阈值、权重）、`puaMap`（薪资字体映射） | 设置页 |
-| `profile` | `title_core`、`prefer`、`avoid`、`must_have`、`reject_keywords`、`target_cities`、`min_salary_k`、`experience`、`greeting_template` | 设置页 |
+| `profile` | `title_core`、`prefer`、`avoid`、`must_have`、`reject_keywords`、`target_cities`、`min_salary_k`、`activity_max_idle_days`、`experience`、`greeting_template` | 设置页 |
 | `records` | 以 `id:<jobId>` 或 `tx:<标题>\|<公司>` 为键，值为 `{title, company, status, ts, ...}` | content.js |
 | `stats` | `{date, applied}`，跨天自动归零 | content.js |
 
@@ -159,7 +163,7 @@ tests/ui.test.js         68 项   jsdom：popup 状态、报告面板、诊断�
 
 **为什么没有 E2E（真浏览器 + 真账号）**：因为它不可重复。这类工具 90% 的 bug 是「这个版本的 DOM 和我以为的不一样」，而真实 DOM 每天都在变，拿它做断言等于把测试绑在一个会漂移的目标上。
 
-折中办法是：**用 jsdom 重构出「我以为的 DOM」，再让真实页面来打脸**。每次真机出问题，第一件事是把这个现场写成一条 jsdom 夹具（为什么点不到、面板为什么读到壳），然后修到用例变绿。485 项测试里，几乎每一组都对应一次真机故障。
+折中办法是：**用 jsdom 重构出「我以为的 DOM」，再让真实页面来打脸**。每次真机出问题，第一件事是把这个现场写成一条 jsdom 夹具（为什么点不到、面板为什么读到壳），然后修到用例变绿。535 项测试里，几乎每一组都对应一次真机故障。
 
 ## 目录
 

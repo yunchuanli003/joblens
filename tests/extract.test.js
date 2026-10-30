@@ -213,6 +213,46 @@ console.log('== 详情面板 ==');
   eq('空 HTML 返回空', E.jdFromHtml(''), '');
 }
 
+/* HR 活跃度：卡片右侧那句「今日活跃 / 3日内活跃 / 本月活跃」
+   卡片是最容易读到它的地方（详情页要发请求），所以扫描阶段就该用它筛一遍 */
+{
+  const { E } = setup(`
+    <div class="job-card-wrap">
+      <a href="/job_detail/act1.html"><span class="job-name">EMC 测试工程师</span></a>
+      <span class="job-area">宁波</span>
+      <div class="job-card-right"><span class="boss-name">王女士</span><span class="boss-active">3日内活跃</span></div>
+    </div>
+    <div class="job-card-wrap">
+      <a href="/job_detail/act2.html"><span class="job-name">电源测试工程师</span></a>
+      <div class="job-card-right"><span class="boss-active">半年前活跃</span></div>
+    </div>
+    <div class="job-card-wrap">
+      <a href="/job_detail/act3.html"><span class="job-name">硬件测试工程师</span></a>
+      <div class="job-note">负责社群活跃度运营</div>
+    </div>
+  `);
+  const cards = E.collectCards(document, '0123456789');
+  eq('卡片读出活跃档位', cards[0].activity, '3日内活跃');
+  eq('久未活跃的档位也照样读出来', cards[1].activity, '半年前活跃');
+  eq('跟 HR 无关的「活跃」不误判', cards[2].activity, '');
+}
+
+/* 详情页 HTML 里也有活跃度：卡片上只写「近期活跃」时，这里是唯一的第二来源 */
+{
+  const { E } = setup('<div></div>');
+  const p = E.parseJdHtml('<html><body>' +
+    '<div class="job-boss-info">王女士 · HR · 1月内活跃</div>' +
+    '<div class="job-sec-text">岗位职责：负责产线测试设备维护与 EMC 整改，3 年以上经验。</div>' +
+    '</body></html>');
+  eq('详情页读出 HR 档位', p.activity, '1月内活跃');
+  ok('详情页 JD 和活跃度互不影响', p.text.indexOf('EMC') >= 0, p.text);
+  eq('没有活跃度时留空串', E.parseJdHtml(
+    '<div class="job-sec-text">岗位职责：负责产线测试设备维护与整改，三年以上经验。</div>').activity, '');
+  eq('jdFromHtml 仍然只返回正文', E.jdFromHtml(
+    '<div class="job-boss-info">1月内活跃</div><div class="job-sec-text">岗位职责：负责 B 端 SaaS 产品运营策略与数据分析，3 年以上经验。</div>'
+  ).indexOf('1月内活跃'), -1);
+}
+
 /* ---------------------------------------------------------------- 沟通按钮 */
 
 console.log('== 沟通按钮 ==');

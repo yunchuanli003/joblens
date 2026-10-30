@@ -949,6 +949,75 @@ function send(handlers, msg) {
   ok('没有落到「未读到 JD」', fjLog.indexOf('未读到 JD') < 0, fjLog);
   ok('没有落到「未找到沟通按钮」', fjLog.indexOf('未找到沟通按钮') < 0, fjLog);
 
+  /* ---- HR 活跃度：两周没上线的 HR，投过去也没人看 ---- */
+  console.log('== HR 活跃度 ==');
+
+  const logOf = (h) => h.w.document.getElementById('boss-scout-host').shadowRoot
+    .getElementById('log').textContent;
+
+  /* ① 卡片上就写着「1月内活跃」：扫描阶段直接判掉，队列里不该有它 */
+  const stale = boot({
+    html: `<!DOCTYPE html><html><head><title>BOSS直聘</title></head><body>
+    <div class="job-list-box"><ul>
+      <li class="job-card-wrapper">
+        <div class="job-card-wrap" id="card-stale">
+          <a href="/job_detail/stale01.html">
+            <span class="job-name">产品运营</span>
+            <span class="job-salary">18-28K</span>
+            <h3 class="company-name">戊网络科技</h3>
+            <span class="job-area">杭州·西湖区</span>
+            <ul class="tag-list"><li>SaaS</li></ul>
+          </a>
+          <div class="job-card-right"><span class="boss-active">1月内活跃</span></div>
+        </div>
+      </li>
+    </ul></div>
+    <div class="job-detail-box" id="panel"><div class="job-sec-text">请从左侧选择一个岗位查看详情</div></div>
+    </body></html>`
+  });
+  await sleep(160);
+  await send(stale.handlers, { type: 'scan' });
+  await sleep(200);
+
+  const staleBadge = stale.w.document.querySelector('#card-stale .bs-badge');
+  ok('卡片直接被标成跳过', staleBadge && staleBadge.textContent.indexOf('跳过') >= 0,
+    staleBadge && staleBadge.textContent);
+  ok('徽章提示写明原因', staleBadge && staleBadge.title.indexOf('HR 久未活跃') >= 0,
+    staleBadge && staleBadge.title);
+
+  await send(stale.handlers, { type: 'start' });
+  await sleep(400);
+  eq('不进投递队列', stale.clicks.good, 0);
+  eq('不产生投递记录', Object.keys(stale.stored.records).length, 0);
+
+  /* ② 卡片没写档位，详情页才写「1月内活跃」：请求之后、读 JD 停留之前就停手 */
+  const staleDeep = boot({
+    fetchJd: () => '<html><body><div class="job-boss-info">王女士 · HR · 1月内活跃</div>' +
+      '<div class="job-sec-text">产品运营 岗位职责：负责 B 端 SaaS 产品的用户增长与数据运营，' +
+      '要求 3 年以上经验，熟悉数据分析工具。任职要求：本科及以上。</div></body></html>'
+  });
+  await sleep(160);
+  await send(staleDeep.handlers, { type: 'scan' });
+  await send(staleDeep.handlers, { type: 'start' });
+  /* 每份卡住的那几秒是「滚到卡片 + 停顿」，所以这里等日志，不等固定时长 */
+  for (let i = 0; i < 60 && logOf(staleDeep).indexOf('不投了') < 0; i++) await sleep(100);
+
+  eq('详情页说 HR 一个月没上线 → 不点沟通', staleDeep.clicks.chat, 0);
+  eq('也不算一次成功投递', staleDeep.stored.stats.applied, 0);
+  ok('日志说明为什么没投', logOf(staleDeep).indexOf('不投了') >= 0, logOf(staleDeep));
+
+  /* ③ 只写「近期活跃」这种模糊话：认不出档位，照常投 —— 不能为了筛僵尸岗误杀一片 */
+  const vague = boot({
+    fetchJd: () => '<html><body><div class="job-boss-info">王女士 · HR · 近期活跃</div>' +
+      '<div class="job-sec-text">产品运营 岗位职责：负责 B 端 SaaS 产品的用户增长与数据运营，' +
+      '要求 3 年以上经验，熟悉数据分析工具。任职要求：本科及以上。</div></body></html>'
+  });
+  await sleep(160);
+  await send(vague.handlers, { type: 'scan' });
+  await send(vague.handlers, { type: 'start' });
+  await sleep(400);
+  ok('「近期活跃」照常进队列', logOf(vague).indexOf('开始投递，队列 1 个') >= 0, logOf(vague));
+
   console.log('');
   if (fail) {
     console.log(`✗ ${fail} 项失败 / 共 ${pass + fail} 项\n`);

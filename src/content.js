@@ -110,6 +110,9 @@
         : (t ? byTx.get(t) : null);
       if (old) {
         old.el = c.el;                   // 复用已有记录，只刷新 DOM 引用
+        /* 活跃度是「会变」的字段：同一个岗位隔一天再看，可能从「3日内活跃」
+           变成「本周活跃」。合并时以新读到的为准，读不到就保留旧值。 */
+        if (c.activity) old.activity = c.activity;
         if (c.id && !old.id) { old.id = c.id; byId.set(String(c.id), old); }
         if (t) byTx.set(t, old);
         return;
@@ -201,6 +204,7 @@
     greeting_failed: '招呼语没发出去',
     chat_not_opened: '聊天页没打开',
     already_contacted: 'BOSS 显示已沟通过',
+    stale_hr: 'HR 久未活跃',
     jd_rejected: '读完 JD 判为不合适',
     jumped_detail: '被跳到详情页',
     manual_skip: '手动跳过'
@@ -383,6 +387,21 @@
       if (!jdText && State.openDiag && fd && fd.why) {
         State.openDiag = '详情页请求：' + fd.why + '\n' + State.openDiag;
       }
+    }
+
+    /* HR 活跃度复核：卡片上常常只写「近期活跃」这种模糊话，详情页里才是
+       「1月内活跃」。这一步放在读 JD 停留之前——真不活跃的岗位能省掉几秒白等。
+       判据是「所有能认出的证据都超期」：只要有一条说 HR 最近来过，就放行。 */
+    var lim = Number(State.profile.activity_max_idle_days);
+    var parsed = [job.activity, fd && fd.activity]
+      .filter(Boolean).map(function (a) { return C.activityOf(a); }).filter(Boolean);
+    var idle = (lim > 0 && parsed.length && parsed.every(function (p) { return p.days > lim; }))
+      ? parsed[0] : null;
+    if (idle) {
+      log('HR ' + idle.phrase + '，不投了：' + job.title.slice(0, 12), 'dim');
+      job.decision = { verdict: 'reject', score: 0, reasons: ['HR 久未活跃：' + idle.phrase] };
+      paintBadge(job);
+      return { ok: false, why: 'stale_hr', skip: true };
     }
 
     /* 按钮已经变成「继续沟通」= 之前联系过这个人。好消息是此时还没花时间读 JD，

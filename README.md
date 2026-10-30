@@ -4,8 +4,8 @@
 在你**自己已登录的浏览器**里给岗位打分、标注，再按节流节奏逐个发起沟通。规则、记录、画像全部留在本机。
 
 ![manifest](https://img.shields.io/badge/manifest-v3-2ea44f)
-![version](https://img.shields.io/badge/version-1.4.7-blue)
-![tests](https://img.shields.io/badge/tests-485%20passed-brightgreen)
+![version](https://img.shields.io/badge/version-1.5.0-blue)
+![tests](https://img.shields.io/badge/tests-535%20passed-brightgreen)
 ![deps](https://img.shields.io/badge/runtime%20deps-0-lightgrey)
 ![license](https://img.shields.io/badge/license-MIT-black)
 
@@ -30,6 +30,7 @@ flowchart LR
 | **卡片标注** | 扫描后每张卡右上角出现徽章：绿=推荐、橙=待看、灰=跳过，不点开也能一眼筛完一屏 |
 | **克制投递** | 单轮 8 份、每日 30 份、12~30 秒随机间隔、每 8 份休息、连续失败 3 次熔断 |
 | **JD 复核** | 投之前直读详情页 JD 全文重新打分，不达阈值就跳过（此时连卡片都不点） |
+| **HR 活跃度** | 卡片/详情页的「3日内活跃 / 本月活跃 / 半年前活跃」换算成天数，超过门槛（默认 14 天）直接跳过；认不出档位的照常打分 |
 | **跨轮去重** | `jobId` + `标题\|公司` 双键，已投的永不重投，同一岗位两张卡也不会重复 |
 | **可诊断** | 一份纯文本报告 + 一份 DOM 结构诊断，失败时打出「试过哪些目标、每个候选多少字、链接指向哪」 |
 
@@ -47,15 +48,15 @@ flowchart LR
 
 1. 打开 `chrome://extensions/`（Edge 用 `edge://extensions/`）→ 开启「开发人员模式」
 2. 「加载解压缩的扩展」→ 选择仓库根目录（或 [Release](../../releases) 里 zip 解压出的目录）
-3. 首次加载会自动打开设置页，填六项画像（**标题核心**最容易漏，它决定标题级误判挡不挡得住）
+3. 首次加载会自动打开设置页，填七项画像（**标题核心**最容易漏，它决定标题级误判挡不挡得住）
 4. 打开 `https://www.zhipin.com/web/geek/jobs?query=你的搜索词` → 点悬浮面板「扫描打分」
 
 **想跑测试或自己打包**：
 
 ```bash
 npm install            # 只为测试，扩展本身零依赖
-npm run verify         # 自检（语法 / manifest / 权限 / 版本 / 文档链接）+ 四套测试 485 项
-npm run build          # 产出 dist/unpacked（可直接加载）与 dist/boss-scout-1.4.7.zip
+npm run verify         # 自检（语法 / manifest / 权限 / 版本 / 文档链接）+ 四套测试 535 项
+npm run build          # 产出 dist/unpacked（可直接加载）与 dist/boss-scout-1.5.0.zip
 ```
 
 扩展本体就是 `manifest.json` + 几个 js 文件，没有构建步骤；上面的 `npm` 命令只服务于测试与发布。
@@ -98,18 +99,18 @@ npm run icons          # 重新生成图标（需要 Python）
 
 | 测试 | 项数 | 覆盖 |
 |---|---|---|
-| `tests/core.test.js` | 188 | 薪资解析、PUA 解密、打分、招呼语、弹窗分类、探针、配置合并、报告格式 |
-| `tests/extract.test.js` | 122 | 选择器回退、可见性、jobId 解析、按钮查找、点击目标链、聊天页输入框、滚动容器、诊断输出 |
-| `tests/flow.test.js` | 107 | 全链路：扫描 → 标注 → 报告 → 投递 → 落库 → 去重 → SPA 跳转 → 换一批 → 发招呼语 → 交给 BOSS |
-| `tests/ui.test.js` | 68 | popup 状态、报告面板、诊断面板、设置页回填 / 校验 / 保存 / 节奏档位 |
+| `tests/core.test.js` | 221 | 薪资解析、PUA 解密、打分、HR 活跃档位、招呼语、弹窗分类、探针、配置合并、报告格式 |
+| `tests/extract.test.js` | 129 | 选择器回退、可见性、jobId 解析、按钮查找、点击目标链、聊天页输入框、滚动容器、诊断输出 |
+| `tests/flow.test.js` | 115 | 全链路：扫描 → 标注 → 报告 → 投递 → 落库 → 去重 → SPA 跳转 → 换一批 → 发招呼语 → 交给 BOSS |
+| `tests/ui.test.js` | 70 | popup 状态、报告面板、诊断面板、设置页回填 / 校验 / 保存 / 节奏档位 |
 
-没有 E2E：真实 DOM 每天在变，拿它做断言等于把测试绑在会漂移的目标上。做法是反过来——**每次真机故障都先写成一条 jsdom 夹具**，再修到用例变绿。485 项测试几乎每一组都对应一次线上问题，变更记录见 [CHANGELOG.md](CHANGELOG.md)。
+没有 E2E：真实 DOM 每天在变，拿它做断言等于把测试绑在会漂移的目标上。做法是反过来——**每次真机故障都先写成一条 jsdom 夹具**，再修到用例变绿。535 项测试几乎每一组都对应一次线上问题，变更记录见 [CHANGELOG.md](CHANGELOG.md)。
 
 ## 文档
 
 | 文件 | 内容 |
 |---|---|
-| [docs/USAGE.md](docs/USAGE.md) | 安装、画像六项、节奏三档、换一批、招呼语两种模式、排错手册 |
+| [docs/USAGE.md](docs/USAGE.md) | 安装、画像七项、节奏三档、换一批、招呼语两种模式、排错手册 |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | 分层、扫描与投递时序、三条不变量、存储结构、测试策略 |
 | [docs/DESIGN.md](docs/DESIGN.md) | 设计与取舍：为什么是扩展、为什么本地规则、为什么双键去重、明确不做什么 |
 | [CHANGELOG.md](CHANGELOG.md) | 每个版本按「现象 → 根因 → 改动」记录 |

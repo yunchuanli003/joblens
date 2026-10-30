@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "boss-scout 求职筛选助手",
-  "version": "1.4.7",
+  "version": "1.5.0",
   "description": "在你自己的浏览器里做岗位筛选、匹配打分与克制投递。不接管浏览器、不开启调试端口、不使用任何调试协议。",
   "minimum_chrome_version": "102",
   "permissions": ["storage"],

@@ -425,6 +425,60 @@ const mixIdx = C.doneIndex({
 });
 ok('有弱记录时仍能兜底', C.isDone({ id: 'y9', title: 'EMC 测试工程师', company: '甲检测' }, mixIdx));
 
+/* ---------------------------------------------------------------- HR 活跃度 */
+console.log('== HR 活跃度 ==');
+
+/* BOSS 不给日期只给档位，这里把档位换算成「最多多久以前」。
+   换算错一天不会出事，但把「本周活跃」认成「本月活跃」会白白丢掉好岗位，
+   所以每个档位都要有断言。 */
+eq('刚刚活跃 = 0 天', C.activityOf('HR 刚刚活跃'), { phrase: '刚刚活跃', days: 0 });
+eq('今日活跃 = 0 天', C.activityOf('今日活跃').days, 0);
+eq('当前在线 = 0 天', C.activityOf('当前在线').days, 0);
+eq('昨日活跃 = 1 天', C.activityOf('昨日活跃').days, 1);
+eq('3日内活跃 = 3 天', C.activityOf('3日内活跃').days, 3);
+eq('3天前活跃 = 3 天', C.activityOf('3天前活跃').days, 3);
+eq('本周活跃 = 7 天', C.activityOf('本周活跃').days, 7);
+eq('2周内活跃 = 14 天', C.activityOf('2周内活跃').days, 14);
+eq('1月内活跃 = 30 天', C.activityOf('1月内活跃').days, 30);
+eq('本月活跃 = 30 天', C.activityOf('本月活跃').days, 30);
+eq('半年前活跃 = 180 天', C.activityOf('半年前活跃').days, 180);
+eq('保留原始短语用于展示', C.activityOf('3日内活跃').phrase, '3日内活跃');
+
+/* 认不出就是未知。宁可漏掉几个僵尸岗，也不能因为结构失配把整页岗位跳光。 */
+eq('「近期活跃」太模糊，不当成档位', C.activityOf('近期活跃'), null);
+eq('空文本返回 null', C.activityOf(''), null);
+eq('非活跃语境不误判', C.activityOf('负责社群活跃度与用户留存'), null);
+eq('JD 里的「活跃用户」不误判', C.activityOf('统计日活跃用户数与留存'), null);
+
+eq('超过阈值返回档位', C.staleActivity('1月内活跃', 14).days, 30);
+eq('未超过阈值不返回', C.staleActivity('本周活跃', 14), null);
+eq('等于阈值不算超期（2周内活跃 @14 天）', C.staleActivity('2周内活跃', 14), null);
+eq('阈值 0 = 关闭', C.staleActivity('半年前活跃', 0), null);
+eq('阈值非数字 = 不筛', C.staleActivity('半年前活跃', undefined), null);
+
+/* 打分侧的接入点：只在「明确超期」时一票否决，其余情况照常算分 */
+const ACT_JOB = { title: '产品运营', company: '甲科技', area: '杭州·西湖区', salary: '15-25K', tags: ['SaaS'], text: '负责数据驱动增长' };
+const P_IDLE = Object.assign({}, P, { activity_max_idle_days: 14 });
+
+eq('本月活跃的岗位直接跳过', C.evaluate(Object.assign({}, ACT_JOB, { activity: '本月活跃' }), P_IDLE, CFG).verdict, 'reject');
+ok('跳过理由写明档位', C.evaluate(Object.assign({}, ACT_JOB, { activity: '本月活跃' }), P_IDLE, CFG).reasons[0].indexOf('HR 久未活跃：本月活跃') >= 0);
+eq('半年前活跃的 0 分', C.evaluate(Object.assign({}, ACT_JOB, { activity: '半年前活跃' }), P_IDLE, CFG).score, 0);
+eq('2周内活跃照常推荐', C.evaluate(Object.assign({}, ACT_JOB, { activity: '2周内活跃' }), P_IDLE, CFG).verdict, 'approve');
+eq('今日活跃照常推荐', C.evaluate(Object.assign({}, ACT_JOB, { activity: '今日活跃' }), P_IDLE, CFG).verdict, 'approve');
+eq('认不出档位时不误杀', C.evaluate(Object.assign({}, ACT_JOB, { activity: '近期活跃' }), P_IDLE, CFG).verdict, 'approve');
+eq('没有活跃度字段时不误杀', C.evaluate(ACT_JOB, P_IDLE, CFG).verdict, 'approve');
+eq('门槛填 0 时不做活跃度筛选', C.evaluate(Object.assign({}, ACT_JOB, { activity: '半年前活跃' }), Object.assign({}, P, { activity_max_idle_days: 0 }), CFG).verdict, 'approve');
+eq('门槛 30 天时「本月活跃」放行', C.evaluate(Object.assign({}, ACT_JOB, { activity: '本月活跃' }), Object.assign({}, P, { activity_max_idle_days: 30 }), CFG).verdict, 'approve');
+eq('门槛 30 天时「半年前活跃」仍跳过', C.evaluate(Object.assign({}, ACT_JOB, { activity: '半年前活跃' }), Object.assign({}, P, { activity_max_idle_days: 30 }), CFG).verdict, 'reject');
+
+/* 报告里要能看到「这一轮是按什么门槛筛的」，否则贴给别人时说不清 */
+const repIdle = C.buildScanReport(
+  [{ title: '产品运营', decision: { verdict: 'reject', score: 0, reasons: ['HR 久未活跃：本月活跃'] } }],
+  { profile: P_IDLE }
+);
+ok('报告写出 HR 活跃门槛', repIdle.text.indexOf('HR 活跃门槛 14 天') >= 0, repIdle.text);
+ok('依据统计能认出 HR 久未活跃', repIdle.text.indexOf('HR 久未活跃 ×1') >= 0, repIdle.text);
+
 /* ---------------------------------------------------------------- 随机 */
 console.log('== 随机 ==');
 let inRange = true;

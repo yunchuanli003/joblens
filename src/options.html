@@ -152,6 +152,11 @@
         <input type="number" id="p-minsal" min="0" step="1" placeholder="12">
         <div class="sub">岗位薪资区间上限低于此值直接跳过；区间下限低于此值仅扣分提示</div>
       </div>
+      <div class="field">
+        <label for="p-idle">HR 久未活跃就跳过（天） <span class="q" title="BOSS 卡片上写的是档位：今日活跃 / 3日内活跃 / 本周活跃 / 2周内活跃 / 本月活跃 / 半年前活跃。填 14 表示「2周内活跃」放行、「本月活跃」跳过。只认明确档位，认不出（如「近期活跃」）一律放行，不会误杀">?</span></label>
+        <input type="number" id="p-idle" min="0" step="1" placeholder="14">
+        <div class="sub">超过这么多天没活跃的 HR 直接跳过；填 0 关闭。宁漏不错杀：认不出档位的岗位照常打分</div>
+      </div>
     </div>
 
     <div class="grid" style="margin-top:14px">

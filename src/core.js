@@ -52,6 +52,10 @@
     role_summary: '3 年 B 端 SaaS 产品运营，想找产品运营 / 用户运营岗',
     target_cities: ['杭州'],
     min_salary_k: 12,
+    /* HR 超过这么多天没活跃就跳过。BOSS 只给档位不给日期，所以这里比的是
+       「档位上界」：14 天时「2周内活跃」放行、「本月活跃」和「半年前活跃」被拦。
+       填 0 = 不按活跃度筛（老配置里没有这个字段时也是 0，行为不变）。 */
+    activity_max_idle_days: 14,
     experience: '3 年',
     prefer: ['产品运营', '用户运营', 'SaaS', 'B 端', '数据驱动', '增长'],
     title_core: [],
@@ -293,6 +297,68 @@
     return out;
   }
 
+  /* ---------------------------------------------------------------- HR 活跃度 */
+
+  /* BOSS 不写「HR 最后一次上线是几号」，只写一个档位：刚刚活跃 / 今日活跃 /
+     3日内活跃 / 本周活跃 / 2周内活跃 / 本月活跃 / 半年前活跃。
+     所以这里做的是「把档位换算成最多多少天以前」——它是上界不是精确值：
+     「1月内活跃」可能是一小时前，也可能是 29 天前。拿它做硬筛可以接受，
+     因为真正被筛掉的是「HR 已经一个月没上线」那类岗位，投过去本来也没人看。
+
+     三条底线：
+     1. 认不出 = 未知，一律放行。宁可漏掉几个僵尸岗，也不能因为一次结构失配
+        把整页岗位跳光——那样用户看到的是「今天一个都不推荐」，比误投十个更糟。
+     2. 只认严格句式（时间档位 + 活跃 / 在线），不认 JD 正文里的「社群活跃度」。
+     3. 越靠前越先匹配：先认「半年前」「一年前」，再认带数字的通用句式。 */
+  var ACTIVITY_RULES = [
+    { re: /半年前活跃|半年内未活跃/, days: 180 },
+    { re: /一年前活跃|1\s*年前活跃/, days: 365 },
+    { re: /刚刚活跃|刚才活跃|今日活跃|今天活跃|实时活跃|当前在线|正在在线/, days: 0 },
+    { re: /昨日活跃|昨天活跃/, days: 1 },
+    { re: /(\d+)\s*小时前活跃/, days: 0 },
+    { re: /(\d+)\s*日内活跃|(\d+)\s*天内活跃|近(\d+)\s*日活跃/, days: 'd' },
+    { re: /(\d+)\s*天前活跃/, days: 'd' },
+    { re: /(\d+)\s*周内活跃|近(\d+)\s*周活跃/, days: 'w' },
+    { re: /(\d+)\s*周前活跃/, days: 'w' },
+    { re: /本周活跃|本周内活跃|这周活跃/, days: 7 },
+    { re: /(\d+)\s*个?月内活跃|近(\d+)\s*个?月活跃/, days: 'm' },
+    { re: /(\d+)\s*个?月前活跃/, days: 'm' },
+    { re: /本月活跃|本月内活跃|这个月活跃/, days: 30 }
+  ];
+
+  /* 从一段文字里认出「HR 最近一次活跃」的档位；认不出返回 null。
+     注意「近期活跃」这种模糊说法故意不认：它可能是今天，也可能是上个月。 */
+  function activityOf(text) {
+    var t = clean(text || '');
+    if (!t) return null;
+    for (var i = 0; i < ACTIVITY_RULES.length; i++) {
+      var r = ACTIVITY_RULES[i];
+      var m = t.match(r.re);
+      if (!m) continue;
+      var days = r.days;
+      if (typeof days === 'string') {
+        var n = 0;
+        for (var k = 1; k < m.length; k++) {
+          if (m[k] !== undefined && m[k] !== '') { n = parseInt(m[k], 10); break; }
+        }
+        if (!(n > 0)) continue;
+        days = days === 'w' ? n * 7 : (days === 'm' ? n * 30 : n);
+      }
+      return { phrase: clean(m[0]), days: days };
+    }
+    return null;
+  }
+
+  /* 超过 maxDays 天没活跃就返回那条描述，否则 null。
+     maxDays <= 0 / 非数字 表示不按活跃度筛——老配置里没这个字段时就是「不筛」。 */
+  function staleActivity(text, maxDays) {
+    var lim = Number(maxDays);
+    if (!(lim > 0)) return null;
+    var a = activityOf(text);
+    if (!a) return null;
+    return a.days > lim ? a : null;
+  }
+
   function evaluate(job, profile, cfg) {
     job = job || {};
     profile = profile || {};
@@ -335,12 +401,19 @@
       return { verdict: 'reject', score: 0, reasons: ['命中排除词：' + hits.slice(0, 3).join('、')] };
     }
 
-    /* 4. 标题核心词：标题里一个都没有，说明岗位名根本不是你要的方向。
+    /* 4. HR 活跃度：两周没上线的 HR，投过去大概率没人看。
+       只对「卡片上明确写出档位」的卡片生效；认不出（含「近期活跃」）一律放行。 */
+    var idle = staleActivity(job.activity, profile.activity_max_idle_days);
+    if (idle) {
+      return { verdict: 'reject', score: 0, reasons: ['HR 久未活跃：' + idle.phrase] };
+    }
+
+    /* 5. 标题核心词：标题里一个都没有，说明岗位名根本不是你要的方向。
        这是唯一能挡住「软件测试工程师」「电源销售」这类标题级误判的手段。 */
     var cores = (profile.title_core || []).filter(Boolean);
     var coreHits = splitHits(cores, title, '');
 
-    /* 5. 偏好词打分：标题命中是岗位本质，描述命中只是沾边，权重必须分开 */
+    /* 6. 偏好词打分：标题命中是岗位本质，描述命中只是沾边，权重必须分开 */
     var score = 50;
     var prefer = (profile.prefer || []).concat(profile.must_have || []);
     var ph = splitHits(prefer, title, body);
@@ -368,7 +441,7 @@
       }
     }
 
-    /* 6. 回避词：标题命中扣得比描述重 */
+    /* 7. 回避词：标题命中扣得比描述重 */
     var ah = splitHits(profile.avoid || [], title, body);
     var avoidHits = ah.title.concat(ah.body);
     if (avoidHits.length) {
@@ -376,7 +449,7 @@
       reasons.push('命中回避项：' + avoidHits.slice(0, 3).join('、'));
     }
 
-    /* 7. 必要关键词 */
+    /* 8. 必要关键词 */
     var must = profile.must_have || [];
     if (must.length) {
       var mh = splitHits(must, title, body);
@@ -385,7 +458,7 @@
       }
     }
 
-    /* 8. 标题与求职方向的相关性（英文词也参与，原来「EMC」被整个忽略） */
+    /* 9. 标题与求职方向的相关性（英文词也参与，原来「EMC」被整个忽略） */
     var role = clean(profile.role_summary || '');
     if (role) {
       var tl = title.toLowerCase();
@@ -745,6 +818,7 @@
     var cities = (p.target_cities || []).filter(Boolean);
     if (cities.length) lines.push('城市 ' + cities.join('、'));
     if (Number(p.min_salary_k) > 0) lines.push('薪资下限 ' + p.min_salary_k + 'K');
+    if (Number(p.activity_max_idle_days) > 0) lines.push('HR 活跃门槛 ' + p.activity_max_idle_days + ' 天');
 
     var cores = (p.title_core || []).filter(Boolean);
     /* 标题核心词为空时也要显式写出来：它是挡住「标题级误判」的唯一手段，
@@ -868,6 +942,8 @@
     decrypt: decrypt,
     salarySuspect: salarySuspect,
     parseSalary: parseSalary,
+    activityOf: activityOf,
+    staleActivity: staleActivity,
     evaluate: evaluate,
     makeGreeting: makeGreeting,
     txKey: txKey,

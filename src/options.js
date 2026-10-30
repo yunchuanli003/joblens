@@ -9,6 +9,7 @@ const MAP = {
   'p-role': { src: 'profile', path: 'role_summary' },
   'p-exp': { src: 'profile', path: 'experience' },
   'p-minsal': { src: 'profile', path: 'min_salary_k', kind: 'num' },
+  'p-idle': { src: 'profile', path: 'activity_max_idle_days', kind: 'num' },
   'p-greet': { src: 'profile', path: 'greeting_template' },
   'p-cities': { src: 'profile', path: 'target_cities', kind: 'list' },
   'p-prefer': { src: 'profile', path: 'prefer', kind: 'list' },
