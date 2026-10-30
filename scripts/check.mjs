@@ -52,6 +52,12 @@ const pkg = readJson('package.json');
 if (manifest.version === pkg.version) ok('manifest 与 package.json 同为 ' + manifest.version);
 else bad(`版本不一致：manifest ${manifest.version} / package.json ${pkg.version}`);
 
+/* lock 的 version 不会随 package.json 自动改，最容易在发版时漏掉 */
+const lock = readJson('package-lock.json');
+const lockRoot = lock.packages?.['']?.version || lock.version;
+if (lock.version === pkg.version && lockRoot === pkg.version) ok('package-lock.json 同步 ' + pkg.version);
+else bad(`package-lock.json 版本落后：${lock.version} / ${lockRoot}，应为 ${pkg.version}`);
+
 console.log('== 文档 ==');
 if (pkg.license === 'MIT' && fs.existsSync(path.join(ROOT, 'LICENSE'))) ok('LICENSE（MIT）');
 else bad('LICENSE 缺失或 package.json 的 license 不是 MIT');
