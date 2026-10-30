@@ -80,9 +80,9 @@ sequenceDiagram
   participant SITE as zhipin.com
   participant CO as core.js
 
-  CT->>CT: 闸门检查（本轮 < 8 · 今日 < 30 · 熔断 < 3）
+  CT->>CT: 闸门检查（本轮未满 8 · 今日未满 30 · 熔断未触发）
   CT->>EX: fetchJd(job.id)
-  EX->>SITE: GET /job_detail/<id>.html（credentials: include）
+  EX->>SITE: GET /job_detail/[jobId].html（credentials: include）
   alt 拿到 HTML 且解析出 .job-sec-text
     SITE-->>EX: SSR HTML
     EX->>EX: jdFromHtml()：.job-sec-text → 文本特征兜底
