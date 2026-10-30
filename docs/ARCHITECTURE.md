@@ -39,7 +39,7 @@ graph TD
 
 依赖方向是硬的：`core.js` 不认识 DOM，`extract.js` 不认识业务规则，`content.js` 不认识选择器常量。违反这条的几个具体好处是：
 
-- `core.js` 可以在 Node 里直接单测（188 项，不碰 jsdom）
+- `core.js` 可以在 Node 里直接单测（221 项，不碰 jsdom）
 - 换一个网站（结构完全不同）只需要重写 `extract.js`
 - 调打分公式不会碰到任何点击逻辑
 

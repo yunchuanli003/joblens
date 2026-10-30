@@ -5,6 +5,7 @@
 
 当前适配站点是 BOSS 直聘（`zhipin.com`）。本项目与其运营方无任何关联，也未获其授权或背书；相关名称、商标归各自所有者。使用前请自行确认符合该站服务条款。
 
+[![CI](https://github.com/yunchuanli003/joblens/actions/workflows/ci.yml/badge.svg)](https://github.com/yunchuanli003/joblens/actions/workflows/ci.yml)
 ![manifest](https://img.shields.io/badge/manifest-v3-2ea44f)
 ![version](https://img.shields.io/badge/version-1.5.0-blue)
 ![tests](https://img.shields.io/badge/tests-538%20passed-brightgreen)
@@ -56,7 +57,7 @@ flowchart LR
 **想跑测试或自己打包**：
 
 ```bash
-npm install            # 只为测试，扩展本身零依赖
+npm install            # 只为测试，扩展本身零依赖；需要 Node 22+（jsdom 30 的依赖要求）
 npm run verify         # 自检（语法 / manifest / 权限 / 版本 / 文档链接）+ 四套测试 538 项
 npm run build          # 产出 dist/unpacked（可直接加载）与 dist/joblens-1.5.0.zip
 ```
