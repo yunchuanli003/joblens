@@ -1,7 +1,9 @@
-# boss-scout
+# joblens · 岗位透镜
 
-**BOSS 直聘的本地岗位筛选与半自动沟通扩展。**
+**招聘网站上的本地岗位筛选与半自动沟通扩展。**
 在你**自己已登录的浏览器**里给岗位打分、标注，再按节流节奏逐个发起沟通。规则、记录、画像全部留在本机。
+
+当前适配站点是 BOSS 直聘（`zhipin.com`）。本项目与其运营方无任何关联，也未获其授权或背书；相关名称、商标归各自所有者。使用前请自行确认符合该站服务条款。
 
 ![manifest](https://img.shields.io/badge/manifest-v3-2ea44f)
 ![version](https://img.shields.io/badge/version-1.5.0-blue)
@@ -56,7 +58,7 @@ flowchart LR
 ```bash
 npm install            # 只为测试，扩展本身零依赖
 npm run verify         # 自检（语法 / manifest / 权限 / 版本 / 文档链接）+ 四套测试 538 项
-npm run build          # 产出 dist/unpacked（可直接加载）与 dist/boss-scout-1.5.0.zip
+npm run build          # 产出 dist/unpacked（可直接加载）与 dist/joblens-1.5.0.zip
 ```
 
 扩展本体就是 `manifest.json` + 几个 js 文件，没有构建步骤；上面的 `npm` 命令只服务于测试与发布。
@@ -93,7 +95,7 @@ BOSS 各版本把点击监听绑在容器 / `li` / 标题 / 详情链接上。�
 npm install            # 只为跑测试
 npm run verify         # 自检（语法 / manifest 引用 / 权限白名单 / 版本一致）+ 四套测试
 npm test               # 只跑测试
-npm run build          # 打包 dist/unpacked 与 dist/boss-scout-<version>.zip
+npm run build          # 打包 dist/unpacked 与 dist/joblens-<version>.zip
 npm run icons          # 重新生成图标（需要 Python）
 ```
 
@@ -118,3 +120,7 @@ npm run icons          # 重新生成图标（需要 Python）
 ## 许可
 
 [MIT](LICENSE)。仅供个人求职效率参考，使用风险自负。
+
+- 与任何招聘平台均无关联、未获授权或背书，不包含任何平台的源代码、接口文档或素材。
+- 请在使用前阅读目标平台的服务条款；因使用本工具导致的账号限制、数据损失等后果由使用者承担。
+- 仓库中的示例公司、岗位、HR 与聊天内容均为虚构，仅用于测试。

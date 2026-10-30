@@ -137,7 +137,7 @@ function loadPage(htmlFile, jsFiles, stored, opts) {
 
   /* 扫描报告：popup 取回文本并展开 */
   console.log('== popup：扫描报告 ==');
-  const REPORT = '# boss-scout 扫描报告\n时间 2026-10-29 23:40:00\n' +
+  const REPORT = '# joblens 扫描报告\n时间 2026-10-29 23:40:00\n' +
     '卡片 2｜推荐 1｜待看 0｜跳过 1\n\n## 推荐 (1)\n1.  70 推荐  EMC 测试工程师 | 杭州 | 15-25K\n';
   const hasReport = (m) => (m.type === 'report'
     ? { ok: true, text: REPORT, total: 2, counts: { approve: 1, review: 0, reject: 1 } }
@@ -169,7 +169,7 @@ function loadPage(htmlFile, jsFiles, stored, opts) {
 
   /* 页面诊断：把 DOM 结构原样导到同一个文本框里，标题要换成「页面诊断」 */
   console.log('== popup：页面诊断 ==');
-  const PROBE = '# boss-scout 页面诊断\nurl https://www.zhipin.com/web/geek/jobs\n## 卡片选择器命中\n  .job-card-wrap → 15\n';
+  const PROBE = '# joblens 页面诊断\nurl https://www.zhipin.com/web/geek/jobs\n## 卡片选择器命中\n  .job-card-wrap → 15\n';
   const pd = loadPage('popup.html', ['core.js', 'popup.js'], popupStore, {
     contentReply: (m) => (m.type === 'probe' ? { ok: true, text: PROBE } : contentReply)
   });

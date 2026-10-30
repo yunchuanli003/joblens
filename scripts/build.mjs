@@ -145,7 +145,7 @@ for (const f of files) {
   fs.copyFileSync(f.full, dest);
 }
 
-const zipName = `boss-scout-${manifest.version}.zip`;
+const zipName = `joblens-${manifest.version}.zip`;
 fs.writeFileSync(path.join(DIST, zipName), zip(files));
 
 const kb = (n) => (n / 1024).toFixed(1) + ' KB';

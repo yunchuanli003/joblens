@@ -735,7 +735,7 @@ console.log('== 页面诊断 ==');
       <a class="btn btn-startchat">立即沟通</a></div>`);
 
   const text = E.probePage();
-  ok('诊断带标题', text.indexOf('# boss-scout 页面诊断') === 0, text.slice(0, 60));
+  ok('诊断带标题', text.indexOf('# joblens 页面诊断') === 0, text.slice(0, 60));
   ok('诊断列出卡片命中数', text.indexOf('解析出卡片 1 个') > 0, text.slice(0, 400));
   ok('诊断带首个卡片 HTML', text.indexOf('job-card-wrap') > 0);
   ok('诊断列出分页候选', text.indexOf('page-next') > 0);

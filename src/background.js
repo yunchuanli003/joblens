@@ -21,7 +21,7 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 
   if (details.reason === 'install') {
     chrome.runtime.openOptionsPage();
-    console.info('[boss-scout] 首次安装。', DEFAULT_PROFILE_NOTE);
+    console.info('[joblens] 首次安装。', DEFAULT_PROFILE_NOTE);
   }
 });
 

@@ -23,5 +23,5 @@ jobs:
       - name: 上传可加载的扩展包
         uses: actions/upload-artifact@v4
         with:
-          name: boss-scout-unpacked
+          name: joblens-unpacked
           path: dist/unpacked

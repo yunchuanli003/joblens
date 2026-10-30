@@ -1,7 +1,7 @@
 {
-  "name": "boss-scout-ext",
+  "name": "joblens",
   "version": "1.5.0",
-  "description": "BOSS 直聘岗位筛选与半自动沟通的浏览器扩展（MV3）：本地打分、克制投递、全程可诊断",
+  "description": "招聘网站岗位筛选与半主动沟通的浏览器扩展（MV3）：本地打分、克制投递、全程可诊断",
   "license": "MIT",
   "private": true,
   "keywords": [
@@ -21,7 +21,7 @@
     "test:extract": "node tests/extract.test.js",
     "test:flow": "node tests/flow.test.js",
     "test:ui": "node tests/ui.test.js",
-    "icons": "python tests/make_icons.py"
+    "icons": "python scripts/make-icons.py"
   },
   "devDependencies": {
     "jsdom": "^30.1.3"

@@ -168,7 +168,7 @@ tests/ui.test.js         68 项   jsdom：popup 状态、报告面板、诊断�
 ## 目录
 
 ```
-boss-scout-ext/
+joblens/
   manifest.json          MV3，只有 storage 权限 + zhipin.com host 权限
   src/
     core.js              纯逻辑：薪资、解密、打分、招呼语、弹窗分类（无 DOM 依赖）
@@ -177,9 +177,10 @@ boss-scout-ext/
     background.js        安装初始化 + 消息转发
     popup.html/js        状态面板
     options.html/js      设置与画像
-  tests/                 四套测试 + 图标生成脚本
+  tests/                 四套测试（core / extract / flow / ui）
   scripts/
     check.mjs            语法 + manifest 引用 + 权限白名单 + 版本一致性
     build.mjs            零依赖打包（dist/unpacked + dist/*.zip）
+    make-icons.py        生成扩展图标（纯标准库）
   docs/                  设计 / 架构 / 使用
 ```

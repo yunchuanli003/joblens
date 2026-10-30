@@ -1,4 +1,4 @@
-/* boss-scout core — 纯逻辑，无 DOM / 无 chrome API 依赖，可在 Node 中直接测试 */
+/* joblens core — 纯逻辑，无 DOM / 无 chrome API 依赖，可在 Node 中直接测试 */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) module.exports = factory();
   else root.BossCore = factory();
@@ -871,7 +871,7 @@
     });
 
     var lines = [];
-    lines.push('# boss-scout 扫描报告');
+    lines.push('# joblens 扫描报告');
     if (meta.time) lines.push('时间 ' + meta.time);
     if (meta.url) lines.push('页面 ' + meta.url);
 

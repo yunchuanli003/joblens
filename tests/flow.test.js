@@ -261,7 +261,7 @@ function send(handlers, msg) {
   const { w, stored, handlers, clicks } = env;
   await sleep(150);   // 等 boot() 里的异步初始化完成
 
-  ok('注入悬浮面板', !!w.document.getElementById('boss-scout-host'));
+  ok('注入悬浮面板', !!w.document.getElementById('joblens-host'));
 
   const pong = await send(handlers, { type: 'ping' });
   ok('ping 有响应', pong && pong.ok, JSON.stringify(pong));
@@ -284,7 +284,7 @@ function send(handlers, msg) {
   eq('扫描过程不点击任何岗位', clicks.good + clicks.bad, 0);
 
   /* ---- 扫描报告 ---- */
-  const shadow = w.document.getElementById('boss-scout-host').shadowRoot;
+  const shadow = w.document.getElementById('joblens-host').shadowRoot;
   const reportBox = shadow.getElementById('report');
   const reportText = () => shadow.getElementById('r-text').value;
 
@@ -294,7 +294,7 @@ function send(handlers, msg) {
 
   eq('点报告后打开', reportBox.hidden, false);
   const rt = reportText();
-  ok('报告含标题与汇总', rt.indexOf('# boss-scout 扫描报告') === 0 && rt.indexOf('卡片 2｜推荐 1') > 0, rt);
+  ok('报告含标题与汇总', rt.indexOf('# joblens 扫描报告') === 0 && rt.indexOf('卡片 2｜推荐 1') > 0, rt);
   ok('报告含推荐岗位', rt.indexOf('## 推荐 (1)') > 0 && rt.indexOf('产品运营') > 0, rt);
   ok('报告含跳过岗位', rt.indexOf('## 跳过 (1)') > 0 && rt.indexOf('保险销售顾问') > 0, rt);
   ok('报告带判定理由', rt.indexOf('↳ ') > 0, rt);
@@ -349,7 +349,7 @@ function send(handlers, msg) {
   ok('聊天页扫描返回 0 且不报错', s2 && s2.ok && s2.cards === 0, JSON.stringify(s2));
   eq('聊天页不滚动页面', chat.scrolls.n, 0);
 
-  const chatShadow = chat.w.document.getElementById('boss-scout-host').shadowRoot;
+  const chatShadow = chat.w.document.getElementById('joblens-host').shadowRoot;
   const chatLog = chatShadow.getElementById('log').textContent;
   ok('日志说明当前是聊天页', chatLog.indexOf('聊天页') >= 0, chatLog);
 
@@ -390,7 +390,7 @@ function send(handlers, msg) {
 
   for (let i = 0; i < 120 && nav.stored.stats.applied === 0; i++) await sleep(100);
 
-  const navShadow = nav.w.document.getElementById('boss-scout-host').shadowRoot;
+  const navShadow = nav.w.document.getElementById('joblens-host').shadowRoot;
   const navLog = navShadow.getElementById('log').textContent;
   ok('自我跳转不被当成用户切页', navLog.indexOf('页面已切换') < 0, navLog);
   ok('跳转后本轮仍完成投递', nav.stored.stats.applied === 1,
@@ -413,7 +413,7 @@ function send(handlers, msg) {
   ok('换一批首选滚动加载', sr && sr.ok && sr.how === '滚动加载', JSON.stringify(sr));
   ok('滚动后新增岗位', sr && sr.added >= 1, JSON.stringify(sr));
   ok('确实滚动了容器', scrolled > 0, String(scrolled));
-  ok('日志写明是滚动加载', sc.w.document.getElementById('boss-scout-host').shadowRoot
+  ok('日志写明是滚动加载', sc.w.document.getElementById('joblens-host').shadowRoot
     .getElementById('log').textContent.indexOf('滚动加载') >= 0);
 
   /* ---- 换一批：点「下一页」拿到新岗位 ---- */
@@ -430,7 +430,7 @@ function send(handlers, msg) {
   });
   await sleep(160);
 
-  const pgShadow = pg.w.document.getElementById('boss-scout-host').shadowRoot;
+  const pgShadow = pg.w.document.getElementById('joblens-host').shadowRoot;
   const pgLog = () => pgShadow.getElementById('log').textContent;
 
   const rr = await send(pg.handlers, { type: 'refresh' });
@@ -454,7 +454,7 @@ function send(handlers, msg) {
   const dead = boot({ html: pageHtmlPaged(), onNext: () => { } });
   await sleep(160);
   await send(dead.handlers, { type: 'scan' });       // 先有一批卡片，才谈得上「换」
-  const deadShadow = dead.w.document.getElementById('boss-scout-host').shadowRoot;
+  const deadShadow = dead.w.document.getElementById('joblens-host').shadowRoot;
   const deadLog = () => deadShadow.getElementById('log').textContent;
 
   const pending = send(dead.handlers, { type: 'refresh' });
@@ -490,7 +490,7 @@ function send(handlers, msg) {
   await sleep(160);
   await send(trap.handlers, { type: 'scan' });
 
-  const trapShadow = trap.w.document.getElementById('boss-scout-host').shadowRoot;
+  const trapShadow = trap.w.document.getElementById('joblens-host').shadowRoot;
   const trapPending = send(trap.handlers, { type: 'refresh' });
   for (let i = 0; i < 30 && trapShadow.getElementById('confirm').hidden; i++) await sleep(150);
   if (!trapShadow.getElementById('confirm').hidden) trapShadow.getElementById('c-no').click();
@@ -544,7 +544,7 @@ function send(handlers, msg) {
   ok('消息列表出现发给 Boss 的内容', !!sentMsg && sentMsg.textContent.length > 4,
     sentMsg && sentMsg.textContent);
 
-  const sendLog = chatEnv.w.document.getElementById('boss-scout-host').shadowRoot
+  const sendLog = chatEnv.w.document.getElementById('joblens-host').shadowRoot
     .getElementById('log').textContent;
   ok('日志写明已发送招呼语', sendLog.indexOf('已发送招呼语') >= 0, sendLog);
   eq('今日计数只加 1', chatEnv.stored.stats.applied, 1);
@@ -597,7 +597,7 @@ function send(handlers, msg) {
   const enterMsg = enterChat.w.document.querySelector('#msgs .chat-message');
   ok('回车后消息真的出现在会话里', !!enterMsg && enterMsg.textContent.length > 4,
     enterMsg && enterMsg.textContent);
-  const enterLog = enterChat.w.document.getElementById('boss-scout-host').shadowRoot
+  const enterLog = enterChat.w.document.getElementById('joblens-host').shadowRoot
     .getElementById('log').textContent;
   ok('日志说明改走回车', enterLog.indexOf('改用回车') >= 0, enterLog);
 
@@ -643,7 +643,7 @@ function send(handlers, msg) {
   eq('扩展没有再发一条（对方的自动招呼保留原样）', handMsgs.length, 1);
   eq('输入框保持为空', String(hand.w.document.getElementById('input').textContent || ''), '');
 
-  const handLog = hand.w.document.getElementById('boss-scout-host').shadowRoot
+  const handLog = hand.w.document.getElementById('joblens-host').shadowRoot
     .getElementById('log').textContent;
   ok('日志写明 BOSS 已自动打招呼', handLog.indexOf('BOSS 已自动打招呼') >= 0, handLog);
   ok('日志不出现「已发送招呼语」', handLog.indexOf('已发送招呼语') < 0, handLog);
@@ -668,7 +668,7 @@ function send(handlers, msg) {
   const noMsgRec = noMsg.stored.records['id:good001'];
   eq('没看到自动消息时如实标注', noMsgRec && noMsgRec.note, 'boss_no_msg');
   eq('会话里没有被塞进任何消息', noMsg.w.document.querySelectorAll('#msgs .chat-message').length, 0);
-  const noMsgLog = noMsg.w.document.getElementById('boss-scout-host').shadowRoot
+  const noMsgLog = noMsg.w.document.getElementById('joblens-host').shadowRoot
     .getElementById('log').textContent;
   ok('日志提示招呼语交给 BOSS', noMsgLog.indexOf('招呼语交给 BOSS') >= 0, noMsgLog);
 
@@ -722,9 +722,9 @@ function send(handlers, msg) {
 
   eq('键漂移的已投岗位不进队列', drift.clicks.good, 0);
   eq('没有产生新投递', drift.stored.stats.applied, 0);
-  ok('日志说明这批都投过', drift.w.document.getElementById('boss-scout-host').shadowRoot
+  ok('日志说明这批都投过', drift.w.document.getElementById('joblens-host').shadowRoot
     .getElementById('log').textContent.indexOf('都已投过') >= 0,
-    drift.w.document.getElementById('boss-scout-host').shadowRoot.getElementById('log').textContent);
+    drift.w.document.getElementById('joblens-host').shadowRoot.getElementById('log').textContent);
 
   /* BOSS 自己把按钮改成「继续沟通」= 之前联系过，别点第二遍 */
   const contacted = boot({ panelBtn: '继续沟通' });
@@ -737,9 +737,9 @@ function send(handlers, msg) {
   eq('已沟通的岗位记成 already_contacted', ctRec && ctRec.status, 'already_contacted');
   eq('已沟通不占额度', contacted.stored.stats.applied, 0);
   eq('压根没点那个按钮', contacted.clicks.chat, 0);
-  ok('日志写明已沟通过', contacted.w.document.getElementById('boss-scout-host').shadowRoot
+  ok('日志写明已沟通过', contacted.w.document.getElementById('joblens-host').shadowRoot
     .getElementById('log').textContent.indexOf('已沟通过') >= 0,
-    contacted.w.document.getElementById('boss-scout-host').shadowRoot.getElementById('log').textContent);
+    contacted.w.document.getElementById('joblens-host').shadowRoot.getElementById('log').textContent);
 
   /* ---- 同一岗位在列表里出现两张卡：一张带 job_detail 链接、一张不带，只算一个 ---- */
   console.log('== 重复卡片合并 ==');
@@ -811,7 +811,7 @@ function send(handlers, msg) {
   await send(cap.handlers, { type: 'scan' });
   await send(cap.handlers, { type: 'start' });
 
-  const capShadow = () => cap.w.document.getElementById('boss-scout-host').shadowRoot;
+  const capShadow = () => cap.w.document.getElementById('joblens-host').shadowRoot;
   /* 看状态栏而不是日志：日志只留最近几行，「本轮结束」很容易被后续行挤掉 */
   for (let i = 0; i < 150 && capShadow().getElementById('status').textContent !== '完成'; i++) await sleep(100);
   eq('第一轮投满 1 份就停', Object.keys(cap.stored.records).length, 1);
@@ -853,7 +853,7 @@ function send(handlers, msg) {
   const chainRec = chain.stored.records['id:chain'];
   eq('容器没反应也能把卡片点开并投出去', chainRec && chainRec.status, 'applied');
 
-  const chainLog = chain.w.document.getElementById('boss-scout-host').shadowRoot
+  const chainLog = chain.w.document.getElementById('joblens-host').shadowRoot
     .getElementById('log').textContent;
   ok('日志写明换了点击目标', chainLog.indexOf('改点卡片标题') >= 0 || chainLog.indexOf('改点详情链接') >= 0, chainLog);
   ok('没有落到「未读到 JD」', chainLog.indexOf('未读到 JD') < 0, chainLog);
@@ -869,7 +869,7 @@ function send(handlers, msg) {
   });
   await sleep(160);
   await send(endPage.handlers, { type: 'scan' });
-  const endShadow = endPage.w.document.getElementById('boss-scout-host').shadowRoot;
+  const endShadow = endPage.w.document.getElementById('joblens-host').shadowRoot;
 
   const endPending = send(endPage.handlers, { type: 'refresh' });
   for (let i = 0; i < 60 && endShadow.getElementById('confirm').hidden; i++) await sleep(150);
@@ -940,7 +940,7 @@ function send(handlers, msg) {
   for (let i = 0; i < 80 && !fj.stored.records['id:f900']; i++) await sleep(100);
   await sleep(300);
 
-  const fjLog = fj.w.document.getElementById('boss-scout-host').shadowRoot
+  const fjLog = fj.w.document.getElementById('joblens-host').shadowRoot
     .getElementById('log').textContent;
   ok('按 jobId 请求了详情页', jdUrls.length > 0 && jdUrls[0].indexOf('f900') > 0, jdUrls.join(','));
   ok('日志写明 JD 来自详情页', fjLog.indexOf('JD 来自详情页') >= 0, fjLog);
@@ -952,7 +952,7 @@ function send(handlers, msg) {
   /* ---- HR 活跃度：两周没上线的 HR，投过去也没人看 ---- */
   console.log('== HR 活跃度 ==');
 
-  const logOf = (h) => h.w.document.getElementById('boss-scout-host').shadowRoot
+  const logOf = (h) => h.w.document.getElementById('joblens-host').shadowRoot
     .getElementById('log').textContent;
 
   /* ① 卡片上就写着「1月内活跃」：扫描阶段直接判掉，队列里不该有它 */

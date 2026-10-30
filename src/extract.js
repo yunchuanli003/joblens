@@ -1,4 +1,4 @@
-/* boss-scout extract — 页面结构与选择器，纯函数，可在 jsdom 中测试
+/* joblens extract — 页面结构与选择器，纯函数，可在 jsdom 中测试
  *
  * 这里集中了所有对 BOSS 页面结构的假设。真实页面改版时，只需要动 SEL 表。
  */
@@ -965,7 +965,7 @@
 
   function probePage() {
     var L = [];
-    L.push('# boss-scout 页面诊断');
+    L.push('# joblens 页面诊断');
     L.push('url ' + location.href);
     L.push('path ' + location.pathname);
 

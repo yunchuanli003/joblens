@@ -252,7 +252,7 @@ const rep = C.buildScanReport([
   mk('硬件测试（外包）', 'review', 52, ['薪资偏低（12-18K）'])
 ], { url: 'https://www.zhipin.com/web/geek/jobs?query=EMC', time: '2026-10-29 23:40:00' });
 
-ok('报告带标题', rep.text.indexOf('# boss-scout 扫描报告') === 0);
+ok('报告带标题', rep.text.indexOf('# joblens 扫描报告') === 0);
 ok('报告带时间与页面', rep.text.indexOf('2026-10-29 23:40:00') > 0 && rep.text.indexOf('query=EMC') > 0);
 ok('汇总行计数正确', rep.text.indexOf('卡片 3｜推荐 1｜待看 1｜跳过 1') > 0);
 eq('counts 结构', rep.counts, { approve: 1, review: 1, reject: 1 });

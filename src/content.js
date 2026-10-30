@@ -1,4 +1,4 @@
-/* boss-scout content — 流程与 UI。DOM 结构假设全部在 extract.js，纯逻辑在 core.js。
+/* joblens content — 流程与 UI。DOM 结构假设全部在 extract.js，纯逻辑在 core.js。
  * 这里不建立任何调试连接、不启动额外浏览器进程。
  */
 (function () {
@@ -6,11 +6,11 @@
 
   var C = window.BossCore;
   var E = window.BossExtract;
-  if (!C || !E) { console.warn('[boss-scout] core/extract 未加载'); return; }
+  if (!C || !E) { console.warn('[joblens] core/extract 未加载'); return; }
   if (window.__bossScoutMounted) return;
   window.__bossScoutMounted = true;
 
-  var PANEL_ID = 'boss-scout-host';
+  var PANEL_ID = 'joblens-host';
 
   var sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
 
@@ -1269,7 +1269,7 @@
         '<style>', CSS, '</style>',
         '<div class="wrap">',
         '  <div class="head">',
-        '    <span class="dot"></span><b>boss-scout</b>',
+        '    <span class="dot"></span><b>joblens</b>',
         '    <span class="spacer"></span>',
         '    <button class="icon" id="btn-min" title="折叠">–</button>',
         '  </div>',
