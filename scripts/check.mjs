@@ -76,10 +76,18 @@ for (const doc of docs) {
 }
 ok(`相对链接 ${links} 条全部可达`);
 
-/* 徽章上的测试数会随时间失真，让人以为没跑测试 —— 直接和测试文件的断言数对不上就报警。 */
-const declared = (fs.readFileSync(path.join(ROOT, 'README.md'), 'utf8').match(/tests-(\d+)%20passed/) || [])[1];
+/* 徽章是这个仓库唯一会被外部看到、又没人负责同步的地方：
+   版本号对不上 manifest 就是明摆着的疏漏；测试数没法在这里重跑（flow 要两分钟），
+   所以只做「声明了没」的提醒，改动测试后请手动同步。 */
+const readmeText = fs.readFileSync(path.join(ROOT, 'README.md'), 'utf8');
+const badgeVer = (readmeText.match(/version-(\d+\.\d+\.\d+)-/) || [])[1];
+if (!badgeVer) bad('README 徽章缺少 version-x.y.z');
+else if (badgeVer !== manifest.version) bad(`README 徽章版本 ${badgeVer} 与 manifest ${manifest.version} 不一致`);
+else ok('README 徽章版本 ' + badgeVer);
+
+const declared = (readmeText.match(/tests-(\d+)%20passed/) || [])[1];
 if (!declared) bad('README 徽章缺少 tests-N passed');
-else ok('README 声明测试数 ' + declared);
+else ok(`README 声明测试数 ${declared}（改了测试记得同步徽章与 CHANGELOG）`);
 
 if (fail.length) {
   console.log(`\n✗ ${fail.length} 项未通过`);
