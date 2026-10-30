@@ -134,6 +134,9 @@ function zip(entries) {
 /* ---------------------------------------------------------------- main */
 
 const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, 'manifest.json'), 'utf8'));
+/* 包名只从 package.json 读一次：改名时改一处，产物名跟着走，不会再出现
+   「代码叫新名、zip 还叫旧名」这种发出去才发现的问题。 */
+const pkg = JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json'), 'utf8'));
 const files = collect();
 
 fs.rmSync(DIST, { recursive: true, force: true });
@@ -145,7 +148,7 @@ for (const f of files) {
   fs.copyFileSync(f.full, dest);
 }
 
-const zipName = `joblens-${manifest.version}.zip`;
+const zipName = `${pkg.name}-${manifest.version}.zip`;
 fs.writeFileSync(path.join(DIST, zipName), zip(files));
 
 const kb = (n) => (n / 1024).toFixed(1) + ' KB';

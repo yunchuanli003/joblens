@@ -7,8 +7,8 @@
   var C = window.BossCore;
   var E = window.BossExtract;
   if (!C || !E) { console.warn('[joblens] core/extract 未加载'); return; }
-  if (window.__bossScoutMounted) return;
-  window.__bossScoutMounted = true;
+  if (window.__joblensMounted) return;
+  window.__joblensMounted = true;
 
   var PANEL_ID = 'joblens-host';
 

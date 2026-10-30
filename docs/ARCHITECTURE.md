@@ -155,10 +155,10 @@ sequenceDiagram
 ## 测试策略
 
 ```
-tests/core.test.js      188 项   纯函数：薪资解密、PUA 映射、打分、招呼语、弹窗分类、URL 探针、配置合并、报告格式
-tests/extract.test.js   122 项   jsdom：选择器回退、可见性、jobId 解析、按钮查找、点击目标链、聊天页输入框、滚动容器、诊断输出
-tests/flow.test.js      107 项   jsdom + 假 chrome API：扫描 → 标注 → 报告 → 投递 → 落库 → 去重 → SPA 跳转 → 换一批 → 发招呼语
-tests/ui.test.js         68 项   jsdom：popup 状态、报告面板、诊断面板、设置页回填 / 校验 / 保存 / 节奏档位
+tests/core.test.js      221 项   纯函数：薪资解密、PUA 映射、打分、HR 活跃档位、招呼语、弹窗分类、URL 探针、配置合并、报告格式
+tests/extract.test.js   132 项   jsdom：选择器回退、可见性、jobId 解析、按钮查找、点击目标链、聊天页输入框、滚动容器、诊断输出
+tests/flow.test.js      115 项   jsdom + 假 chrome API：扫描 → 标注 → 报告 → 投递 → 落库 → 去重 → SPA 跳转 → 换一批 → 发招呼语
+tests/ui.test.js         70 项   jsdom：popup 状态、报告面板、诊断面板、设置页回填 / 校验 / 保存 / 节奏档位
 ```
 
 **为什么没有 E2E（真浏览器 + 真账号）**：因为它不可重复。这类工具 90% 的 bug 是「这个版本的 DOM 和我以为的不一样」，而真实 DOM 每天都在变，拿它做断言等于把测试绑在一个会漂移的目标上。
