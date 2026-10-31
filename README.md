@@ -12,6 +12,10 @@
 ![deps](https://img.shields.io/badge/runtime%20deps-0-lightgrey)
 ![license](https://img.shields.io/badge/license-MIT-black)
 
+<img src="docs/assets/demo.png" alt="joblens 悬浮面板：累计 21 个岗位的扫描结果，以及换一批到底后的条件提示" width="821">
+
+左边是扫描后的面板，右边是这一批到底时的提示。面板只报事实：扫了多少、推荐几个、还剩不剩新岗位。没有合适的就直接说 0 个，再告诉你该改哪个条件——不硬凑数。
+
 ```mermaid
 flowchart LR
   A["岗位列表 / 详情 / 聊天页 DOM"] --> B["extract.js<br/>结构适配层"]
