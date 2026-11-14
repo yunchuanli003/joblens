@@ -1,0 +1,44 @@
+{
+  "manifest_version": 3,
+  "name": "joblens · 岗位透镜",
+  "version": "2.0.0",
+  "description": "在你自己的浏览器里做岗位筛选与匹配打分：只读标注，不点击岗位、不发起沟通、不外传数据。",
+  "minimum_chrome_version": "102",
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://www.zhipin.com/*"
+  ],
+  "background": {
+    "service_worker": "src/background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.zhipin.com/*"
+      ],
+      "js": [
+        "src/core.js",
+        "src/extract.js",
+        "src/content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "src/popup.html",
+    "default_title": "joblens · 岗位透镜",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "options_page": "src/options.html"
+}

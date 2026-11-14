@@ -1,0 +1,32 @@
+{
+  "name": "joblens",
+  "version": "2.0.0",
+  "description": "招聘网站岗位筛选与本地打分扩展（MV3）：只读标注、可解释规则、零运行时依赖、全程可诊断",
+  "license": "MIT",
+  "private": true,
+  "keywords": [
+    "chrome-extension",
+    "manifest-v3",
+    "zhipin",
+    "job-search",
+    "jsdom",
+    "shadow-dom"
+  ],
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/check.mjs",
+    "verify": "npm run check && npm test",
+    "test": "node tests/core.test.js && node tests/extract.test.js && node tests/flow.test.js && node tests/ui.test.js",
+    "test:core": "node tests/core.test.js",
+    "test:extract": "node tests/extract.test.js",
+    "test:flow": "node tests/flow.test.js",
+    "test:ui": "node tests/ui.test.js",
+    "icons": "python scripts/make-icons.py"
+  },
+  "devDependencies": {
+    "jsdom": "^30.1.3"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

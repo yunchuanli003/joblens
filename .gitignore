@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.artifacts/
+*.log
+*.zip
+.DS_Store
+Thumbs.db
+
+# 本地过程截图与临时文件
+_旧版截图/
+*.tmp
