@@ -64,7 +64,7 @@ flowchart LR
 **装扩展**（不需要 Node，也不需要打包）：
 
 1. 打开 `chrome://extensions/`（Edge 用 `edge://extensions/`）→ 开启「开发人员模式」
-2. 「加载解压缩的扩展」→ 选择仓库根目录（或 [Release](../../releases) 里 zip 解压出的目录）
+2. 「加载解压缩的扩展」→ 选择仓库根目录（`manifest.json` 就在根目录，Chrome 只加载它引用的文件，README 和 docs 不影响）
 3. 首次加载会自动打开设置页，填画像（**标题核心**最容易漏，它决定标题级误判挡不挡得住）
 4. 打开 `https://www.zhipin.com/web/geek/jobs?query=你的搜索词` → 点悬浮面板「扫描打分」
 
@@ -73,7 +73,7 @@ flowchart LR
 ```bash
 npm install            # 只为测试，扩展本身零依赖；需要 Node 22+（jsdom 30 的依赖要求）
 npm run verify         # 自检（语法 / manifest / 权限 / 版本 / 文档链接）+ 四套测试 310 项
-npm run build          # 产出 dist/unpacked（可直接加载）与 dist/joblens-2.0.0.zip
+npm run build          # 产出 dist/unpacked（可直接加载）
 ```
 
 扩展本体就是 `manifest.json` + 几个 js 文件，没有构建步骤；上面的 `npm` 命令只服务于测试与发布。
@@ -107,7 +107,7 @@ npm run build          # 产出 dist/unpacked（可直接加载）与 dist/joble
 npm install            # 只为跑测试
 npm run verify         # 自检（语法 / manifest 引用 / 权限白名单 / 版本一致）+ 四套测试
 npm test               # 只跑测试
-npm run build          # 打包 dist/unpacked 与 dist/joblens-<version>.zip
+npm run build          # 打包 dist/unpacked（只含扩展必需文件）
 npm run icons          # 重新生成图标（需要 Python）
 ```
 

@@ -96,8 +96,8 @@ if (!declared) bad('README 徽章缺少 tests-N passed');
 else ok(`README 声明测试数 ${declared}（改了测试记得同步徽章与 CHANGELOG）`);
 
 /* 名字只该有一处真源：package.json 的 name。改名时最容易漏的是「对外露脸」的那几处
-   —— 扩展管理页、工具栏、zip 名、CI 产物名；漏了不会报错，只会在商店或 Release 里
-   露出两个名字。这里逐处比对，改回旧名会当场失败。 */
+   —— 扩展管理页、工具栏、CI 产物名；漏了不会报错，只会在商店里露出两个名字。
+   这里逐处比对，改回旧名会当场失败。 */
 console.log('== 命名 ==');
 const brand = pkg.name;
 const readText = (p) => fs.readFileSync(path.join(ROOT, p), 'utf8');
@@ -115,14 +115,6 @@ else bad(`manifest.action.default_title「${dTitle}」不含包名`);
 const h1 = (readmeText.match(/^#\s+(.+)$/m) || [])[1] || '';
 if (h1.includes(brand)) ok('README 标题 ' + h1);
 else bad(`README 一级标题「${h1}」不含包名`);
-
-const zipRef = `${brand}-${manifest.version}.zip`;
-if (readmeText.includes(zipRef)) ok('README 提到的产物名 ' + zipRef);
-else bad(`README 未提到产物名 ${zipRef}（改了包名或版本？）`);
-
-const buildSrc = readText('scripts/build.mjs');
-if (/\$\{pkg\.name\}-\$\{manifest\.version\}\.zip/.test(buildSrc)) ok('打包名由 package.json 派生');
-else bad('scripts/build.mjs 的 zip 名没有从 pkg.name 派生，改名时会漏');
 
 let ciSrc = '';
 try { ciSrc = readText('.github/workflows/ci.yml'); } catch (e) { ciSrc = ''; }
