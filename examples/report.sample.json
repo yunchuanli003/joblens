@@ -1,0 +1,200 @@
+{
+  "_note": "由 scripts/sample.mjs 真实调用 src/core.js 生成，请勿手改；改完跑 npm run sample",
+  "source": {
+    "profile": "examples/profile.sample.json",
+    "jobs": "examples/jobs.sample.json",
+    "page": {
+      "url": "https://www.zhipin.com/web/geek/jobs?query=%E7%A1%AC%E4%BB%B6%E6%B5%8B%E8%AF%95",
+      "captured_at": "2026-11-14 21:40"
+    }
+  },
+  "thresholds": {
+    "approve": 62,
+    "review": 42
+  },
+  "counts": {
+    "approve": 3,
+    "review": 1,
+    "reject": 4
+  },
+  "total": 8,
+  "cards": [
+    {
+      "id": "jl0001",
+      "title": "嵌入式软件工程师",
+      "company": "星野电子",
+      "area": "杭州",
+      "salary": "15-25K",
+      "activity": "今日活跃",
+      "tags": [
+        "STM32",
+        "C 语言",
+        "电路调试",
+        "FreeRTOS"
+      ],
+      "text": "",
+      "decision": {
+        "verdict": "approve",
+        "score": 92,
+        "reasons": [
+          "标题命中：嵌入式",
+          "标签命中：STM32、电路调试",
+          "岗位名对得上：嵌入式",
+          "标题与求职方向相关"
+        ]
+      }
+    },
+    {
+      "id": "jl0002",
+      "title": "硬件测试工程师",
+      "company": "云栖智造",
+      "area": "宁波",
+      "salary": "10-16K",
+      "activity": "本周活跃",
+      "tags": [
+        "万用表",
+        "测试报告",
+        "DQA"
+      ],
+      "text": "",
+      "decision": {
+        "verdict": "approve",
+        "score": 87,
+        "reasons": [
+          "标题命中：硬件测试",
+          "标签命中：DQA",
+          "岗位名对得上：硬件、测试",
+          "标题与求职方向相关"
+        ]
+      }
+    },
+    {
+      "id": "jl0003",
+      "title": "高级硬件工程师",
+      "company": "恒川科技",
+      "area": "深圳",
+      "salary": "20-35K",
+      "activity": "今日活跃",
+      "tags": [
+        "原理图",
+        "PCB",
+        "团队管理"
+      ],
+      "text": "",
+      "decision": {
+        "verdict": "reject",
+        "score": 0,
+        "reasons": [
+          "城市不符（深圳，目标 杭州,宁波）"
+        ]
+      }
+    },
+    {
+      "id": "jl0004",
+      "title": "硬件工程师",
+      "company": "澜图仪器",
+      "area": "杭州",
+      "salary": "11-17K",
+      "activity": "刚刚活跃",
+      "tags": [
+        "原理图",
+        "PCB"
+      ],
+      "text": "",
+      "decision": {
+        "verdict": "review",
+        "score": 50,
+        "reasons": [
+          "未命中任何偏好词",
+          "岗位名对得上：硬件",
+          "标题与求职方向相关"
+        ]
+      }
+    },
+    {
+      "id": "jl0005",
+      "title": "硬件测试员",
+      "company": "恒川科技",
+      "area": "杭州",
+      "salary": "8-12K",
+      "activity": "今日活跃",
+      "tags": [
+        "手工焊接",
+        "出厂检验"
+      ],
+      "text": "外包派遣岗位，需驻客户现场，接受两班倒",
+      "decision": {
+        "verdict": "reject",
+        "score": 0,
+        "reasons": [
+          "命中排除词：外包派遣"
+        ]
+      }
+    },
+    {
+      "id": "jl0006",
+      "title": "电子工程师",
+      "company": "泊岸智控",
+      "area": "宁波",
+      "salary": "9-13K",
+      "activity": "半年前活跃",
+      "tags": [
+        "Altium",
+        "原理图"
+      ],
+      "text": "",
+      "decision": {
+        "verdict": "reject",
+        "score": 0,
+        "reasons": [
+          "HR 久未活跃：半年前活跃"
+        ]
+      }
+    },
+    {
+      "id": "jl0007",
+      "title": "嵌入式硬件工程师",
+      "company": "星野电子",
+      "area": "杭州",
+      "salary": "18-28K",
+      "activity": "刚刚活跃",
+      "tags": [
+        "STM32",
+        "原理图",
+        "EMC"
+      ],
+      "text": "",
+      "decision": {
+        "verdict": "approve",
+        "score": 87,
+        "reasons": [
+          "标题命中：嵌入式",
+          "标签命中：STM32",
+          "岗位名对得上：硬件、嵌入式",
+          "标题与求职方向相关"
+        ]
+      }
+    },
+    {
+      "id": "jl0008",
+      "title": "用户增长运营",
+      "company": "云栖智造",
+      "area": "杭州",
+      "salary": "12-20K",
+      "activity": "今日活跃",
+      "tags": [
+        "数据分析",
+        "A/B 测试"
+      ],
+      "text": "",
+      "decision": {
+        "verdict": "reject",
+        "score": 30,
+        "reasons": [
+          "未命中任何偏好词",
+          "标题不含目标岗位名（硬件/嵌入式/测试…）"
+        ]
+      }
+    }
+  ]
+}

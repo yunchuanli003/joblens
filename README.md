@@ -78,6 +78,19 @@ npm run build          # 产出 dist/unpacked（可直接加载）
 
 扩展本体就是 `manifest.json` + 几个 js 文件，没有构建步骤；上面的 `npm` 命令只服务于测试与发布。
 
+## 示例数据
+
+不装扩展、不打开招聘网站，也能先看清它输出什么。`examples/` 下是一份**由 `src/core.js` 真实跑出来**的扫描结果——8 个虚构岗位，覆盖推荐、待看、城市不符、排除词、HR 久未活跃几种判定。
+
+| 文件 | 内容 |
+|---|---|
+| [examples/profile.sample.json](examples/profile.sample.json) | 输入：虚构求职画像，字段与设置页一一对应，可对照着填自己的 |
+| [examples/jobs.sample.json](examples/jobs.sample.json) | 输入：8 个虚构岗位卡片，字段结构对齐 `extract.js` 的抽取结果 |
+| [examples/report.sample.md](examples/report.sample.md) | 输出：报告文本。面板点「报告」复制出来的就是这种格式 |
+| [examples/report.sample.json](examples/report.sample.json) | 输出：机器可读形态，含每条的 `verdict / score / reasons` |
+
+这些产物不是手抄的：`npm run sample` 现场算一遍并写盘，`npm run sample:check` 在 CI 上重新生成后逐字节比对——**规则改了而示例没更新，CI 直接失败**。想让示例和代码「看起来一致」而实际不一致，是做不到的。详见 [examples/README.md](examples/README.md)。
+
 ## 三个值得一读的设计
 
 **1. 只读是一条物理边界，不是一句承诺。**
@@ -108,6 +121,7 @@ npm install            # 只为跑测试
 npm run verify         # 自检（语法 / manifest 引用 / 权限白名单 / 版本一致）+ 四套测试
 npm test               # 只跑测试
 npm run build          # 打包 dist/unpacked（只含扩展必需文件）
+npm run sample         # 重算 examples/ 下的示例报告
 npm run icons          # 重新生成图标（需要 Python）
 ```
 
@@ -127,6 +141,7 @@ npm run icons          # 重新生成图标（需要 Python）
 | [docs/USAGE.md](docs/USAGE.md) | 安装、画像七项、换一批、报告与诊断、排错手册 |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | 分层、扫描时序、三条不变量、存储结构、测试策略 |
 | [docs/DESIGN.md](docs/DESIGN.md) | 设计与取舍：为什么是扩展、为什么本地规则、为什么只读、明确不做什么 |
+| [examples/README.md](examples/README.md) | 示例数据：怎么来的、演示了哪些判定、怎么换成自己的岗位 |
 | [CHANGELOG.md](CHANGELOG.md) | 每个版本按「现象 → 根因 → 改动」记录 |
 
 ## 许可

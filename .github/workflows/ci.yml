@@ -18,6 +18,8 @@ jobs:
         run: npm ci
       - name: 自检 + 四套测试
         run: npm run verify
+      - name: 示例数据与规则输出一致
+        run: npm run sample:check
       - name: 打包
         run: npm run build
       - name: 上传可加载的扩展包

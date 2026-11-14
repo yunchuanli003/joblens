@@ -16,6 +16,8 @@
     "build": "node scripts/build.mjs",
     "check": "node scripts/check.mjs",
     "verify": "npm run check && npm test",
+    "sample": "node scripts/sample.mjs",
+    "sample:check": "node scripts/sample.mjs --check",
     "test": "node tests/core.test.js && node tests/extract.test.js && node tests/flow.test.js && node tests/ui.test.js",
     "test:core": "node tests/core.test.js",
     "test:extract": "node tests/extract.test.js",

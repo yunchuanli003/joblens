@@ -1,0 +1,82 @@
+{
+  "_note": "全部为虚构岗位：公司、薪资、HR 活跃状态均是编的，不对应任何真实招聘信息。字段结构对齐 source/extract.js 抽出来的卡片对象。",
+  "page": {
+    "url": "https://www.zhipin.com/web/geek/jobs?query=%E7%A1%AC%E4%BB%B6%E6%B5%8B%E8%AF%95",
+    "captured_at": "2026-11-14 21:40"
+  },
+  "jobs": [
+    {
+      "id": "jl0001",
+      "title": "嵌入式软件工程师",
+      "company": "星野电子",
+      "area": "杭州",
+      "salary": "15-25K",
+      "activity": "今日活跃",
+      "tags": ["STM32", "C 语言", "电路调试", "FreeRTOS"]
+    },
+    {
+      "id": "jl0002",
+      "title": "硬件测试工程师",
+      "company": "云栖智造",
+      "area": "宁波",
+      "salary": "10-16K",
+      "activity": "本周活跃",
+      "tags": ["万用表", "测试报告", "DQA"]
+    },
+    {
+      "id": "jl0003",
+      "title": "高级硬件工程师",
+      "company": "恒川科技",
+      "area": "深圳",
+      "salary": "20-35K",
+      "activity": "今日活跃",
+      "tags": ["原理图", "PCB", "团队管理"]
+    },
+    {
+      "id": "jl0004",
+      "title": "硬件工程师",
+      "company": "澜图仪器",
+      "area": "杭州",
+      "salary": "11-17K",
+      "activity": "刚刚活跃",
+      "tags": ["原理图", "PCB"]
+    },
+    {
+      "id": "jl0005",
+      "title": "硬件测试员",
+      "company": "恒川科技",
+      "area": "杭州",
+      "salary": "8-12K",
+      "activity": "今日活跃",
+      "tags": ["手工焊接", "出厂检验"],
+      "text": "外包派遣岗位，需驻客户现场，接受两班倒"
+    },
+    {
+      "id": "jl0006",
+      "title": "电子工程师",
+      "company": "泊岸智控",
+      "area": "宁波",
+      "salary": "9-13K",
+      "activity": "半年前活跃",
+      "tags": ["Altium", "原理图"]
+    },
+    {
+      "id": "jl0007",
+      "title": "嵌入式硬件工程师",
+      "company": "星野电子",
+      "area": "杭州",
+      "salary": "18-28K",
+      "activity": "刚刚活跃",
+      "tags": ["STM32", "原理图", "EMC"]
+    },
+    {
+      "id": "jl0008",
+      "title": "用户增长运营",
+      "company": "云栖智造",
+      "area": "杭州",
+      "salary": "12-20K",
+      "activity": "今日活跃",
+      "tags": ["数据分析", "A/B 测试"]
+    }
+  ]
+}

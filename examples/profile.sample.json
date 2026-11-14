@@ -1,0 +1,13 @@
+{
+  "_note": "虚构画像，只为跑出 examples/ 下的示例报告。字段与设置页一一对应，可直接粘贴到「设置 → 求职画像」对照。",
+  "role_summary": "硬件测试 / 嵌入式开发",
+  "target_cities": ["杭州", "宁波"],
+  "min_salary_k": 10,
+  "activity_max_idle_days": 14,
+  "experience": "1-3 年",
+  "prefer": ["硬件测试", "嵌入式", "STM32", "电路调试", "DQA"],
+  "title_core": ["硬件", "嵌入式", "测试"],
+  "avoid": ["团队管理", "夜班", "轮班"],
+  "must_have": [],
+  "reject_keywords": []
+}
