@@ -37,7 +37,7 @@ flowchart LR
   <sub>右下角是悬浮面板；扫描后每张卡右上角出现徽章：<b>绿=推荐</b> · <b>橙=待看</b> · <b>灰=跳过</b>。鼠标悬停徽章可看这一分的理由。</sub>
 </p>
 
-> 图为**纯 HTML 复刻的界面示意**（[源文件](docs/assets/panel-preview.html)），不是平台截图，也不含真实岗位、真实公司或任何用户数据。面板的尺寸、配色、字号取自扩展本体 CSS，徽章规则取自 `.bs-badge`。
+> 图为**纯 HTML 复刻的界面示意**（[源文件](docs/assets/panel-preview.html)），不是平台截图，也不含真实岗位、真实公司或任何用户数据。面板的尺寸、配色、字号取自扩展本体 CSS，徽章规则取自 `.bs-badge`；图上的三个分数（92 / 50 / 0）由 `src/core.js` 真实算出，可在 [examples/report.sample.md](examples/report.sample.md) 里逐条核对。
 
 ## 它做什么
 
