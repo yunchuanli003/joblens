@@ -27,6 +27,18 @@ flowchart LR
 
 四层单向依赖：`core.js` 不认识 DOM，`extract.js` 不认识业务规则，`content.js` 不认识选择器。所以抽取层能整体换掉（换站点），规则层能在 Node 里纯单测，流程层能拿 jsdom 跑完整链路。细节见 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)。
 
+## 界面
+
+<p align="center">
+  <img src="docs/assets/panel-preview.png" width="820" alt="JobLens 悬浮面板与卡片徽章示意">
+</p>
+
+<p align="center">
+  <sub>右下角是悬浮面板；扫描后每张卡右上角出现徽章：<b>绿=推荐</b> · <b>橙=待看</b> · <b>灰=跳过</b>。鼠标悬停徽章可看这一分的理由。</sub>
+</p>
+
+> 图为**纯 HTML 复刻的界面示意**（[源文件](docs/assets/panel-preview.html)），不是平台截图，也不含真实岗位、真实公司或任何用户数据。面板的尺寸、配色、字号取自扩展本体 CSS，徽章规则取自 `.bs-badge`。
+
 ## 它做什么
 
 | 能力 | 说明 |

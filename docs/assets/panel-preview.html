@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>JobLens 界面示意（纯 HTML 复刻）</title>
+<style>
+  /* ------------------------------------------------------------------
+     这是一份「界面示意图」，不是真实平台截图。
+     所有配色、字号、间距都取自扩展本体的真实 CSS（src/content.js 的
+     CSS 常量与 .bs-badge 规则），但周围的岗位卡片是虚构的示意卡片，
+     不含任何平台标识、真实公司名或真实用户数据。
+
+     用途：README 配图来源。生成方式见文件末尾。
+     ------------------------------------------------------------------ */
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #f7f8fa;
+    font: 14px/1.5 -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    color: #111827;
+  }
+
+  /* 截图视口：1200 × 620 */
+  .stage {
+    position: relative;
+    width: 1200px;
+    height: 620px;
+    overflow: hidden;
+  }
+
+  /* ------------------------------------------------ 虚构岗位列表 */
+  .list {
+    position: absolute;
+    top: 46px;
+    left: 72px;
+    width: 760px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .listhead {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 2px;
+  }
+  .listhead h2 {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: #9ca3af;
+    letter-spacing: .3px;
+  }
+
+  .card {
+    position: relative;
+    background: #fff;
+    border: 1px solid #e8eaed;
+    border-radius: 10px;
+    padding: 17px 20px 16px;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, .04);
+  }
+
+  /* 标题行右侧留空给徽章，不放任何内容 */
+  .card h3 {
+    margin: 0 0 6px;
+    font-size: 15.5px;
+    font-weight: 600;
+    color: #111827;
+    letter-spacing: .1px;
+    /* 给右上角徽章让位 */
+    padding-right: 90px;
+  }
+
+  .card .salary {
+    margin: 0 0 7px;
+    font-size: 14.5px;
+    font-weight: 600;
+    color: #e8590c;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .card .meta {
+    margin: 0 0 11px;
+    font-size: 12.5px;
+    color: #6b7280;
+  }
+  .card .meta i {
+    font-style: normal;
+    margin: 0 7px;
+    color: #d1d5db;
+  }
+
+  .card .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .card .tags li {
+    font-size: 11.5px;
+    color: #4b5563;
+    background: #f3f4f6;
+    border-radius: 4px;
+    padding: 2.5px 8px;
+  }
+
+  /* 徽章：数值与规则来自 src/content.js 的 .bs-badge */
+  .bs-badge {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    z-index: 9;
+    padding: 2px 7px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.5;
+    letter-spacing: .2px;
+    font-variant-numeric: tabular-nums;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .18);
+  }
+  .bs-badge[data-v="approve"] { background: rgba(22, 163, 74, .92); color: #fff; }
+  .bs-badge[data-v="review"]  { background: rgba(217, 119, 6, .92);  color: #fff; }
+  .bs-badge[data-v="reject"]  { background: rgba(75, 85, 99, .85);   color: #d1d5db; }
+
+  /* ------------------------------------------------ 悬浮面板（真实样式） */
+  .wrap {
+    position: absolute;
+    right: 44px;
+    bottom: 38px;
+    width: 266px;
+    z-index: 2147483000;
+    font: 13px/1.5 -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    color: #e6e8ec;
+    background: #14161a;
+    border: 1px solid #2a2f38;
+    border-radius: 12px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, .45);
+    overflow: hidden;
+    user-select: none;
+  }
+
+  .head {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 12px;
+    background: #1a1d23;
+    border-bottom: 1px solid #242932;
+  }
+  .head b { font-size: 12.5px; letter-spacing: .4px; font-weight: 600; }
+  .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: #5b6472; flex: 0 0 auto;
+  }
+  /* 扫描完成后圆点变绿（真实实现里 running 态才有呼吸动画） */
+  .wrap.done .dot { background: #22c55e; }
+  .spacer { flex: 1; }
+  .icon {
+    width: 20px; height: 20px; border: 0; border-radius: 5px;
+    background: #242932; color: #9aa3b2; cursor: pointer;
+    font-size: 13px; line-height: 1; display: flex;
+    align-items: center; justify-content: center;
+  }
+
+  .body { padding: 11px 12px 9px; }
+
+  .stats { display: flex; gap: 8px; margin-bottom: 9px; }
+  .stats > div {
+    flex: 1; background: #1a1d23; border: 1px solid #242932;
+    border-radius: 8px; padding: 6px 0; text-align: center;
+  }
+  .stats em {
+    display: block; font-style: normal; font-size: 16px;
+    font-weight: 600; color: #e6e8ec; line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+  }
+  .stats span { display: block; font-size: 10.5px; color: #7c8494; margin-top: 1px; }
+
+  .status {
+    font-size: 12px; color: #9aa3b2; background: #1a1d23;
+    border-radius: 6px; padding: 6px 9px; margin-bottom: 9px;
+    min-height: 16px; overflow: hidden;
+    text-overflow: ellipsis; white-space: nowrap;
+  }
+
+  .actions { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 9px; }
+  .actions button {
+    flex: 1 1 calc(50% - 6px); padding: 7px 0; border-radius: 7px;
+    border: 1px solid #2f3542; background: #242932; color: #d5d9e0;
+    font-size: 12px; cursor: pointer; font-family: inherit;
+  }
+  .actions button.primary {
+    background: #2563eb; border-color: #2563eb; color: #fff;
+  }
+
+  .log {
+    max-height: 112px; overflow-y: auto; font-size: 11px;
+    line-height: 1.6; margin-bottom: 8px;
+    border-top: 1px solid #20242c; padding-top: 7px;
+  }
+  .line { display: flex; gap: 5px; color: #9aa3b2; word-break: break-all; }
+  .line i {
+    color: #5b6472; font-style: normal; flex: 0 0 auto;
+    font-variant-numeric: tabular-nums;
+  }
+  .line.ok { color: #4ade80; }
+  .line.warn { color: #fbbf24; }
+  .line.dim { color: #6b7280; }
+
+  .foot {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 11px; color: #5b6472;
+    border-top: 1px solid #20242c; padding-top: 7px;
+  }
+  .foot .sep { margin: 0 6px; color: #38404d; }
+  .foot a { color: #60a5fa; cursor: pointer; text-decoration: none; }
+
+  /* 页面脚注：故意放在 620px 视口之外，不会被截进图里 */
+  .note {
+    width: 1200px;
+    padding: 8px 72px 40px;
+    font-size: 12.5px;
+    color: #6b7280;
+    line-height: 1.8;
+    box-sizing: border-box;
+  }
+  .note b { color: #374151; }
+  .note code {
+    background: #eef0f3; border-radius: 3px; padding: 1px 5px;
+    font: 12px/1.5 ui-monospace, Consolas, monospace; color: #374151;
+  }
+</style>
+</head>
+<body>
+
+<div class="stage">
+
+  <!-- 虚构的岗位列表，仅用于示意徽章贴在什么位置 -->
+  <div class="list">
+    <div class="listhead">
+      <h2>岗位列表 · 示意内容</h2>
+    </div>
+
+    <article class="card">
+      <h3>嵌入式软件工程师</h3>
+      <p class="salary">15-25K</p>
+      <p class="meta">星野电子<i>|</i>50-150 人<i>|</i>杭州<i>|</i>1-3 年</p>
+      <ul class="tags">
+        <li>STM32</li><li>C 语言</li><li>电路调试</li><li>FreeRTOS</li>
+      </ul>
+      <div class="bs-badge" data-v="approve" title="标题命中「嵌入式」；技能命中 STM32、C 语言">78 推荐</div>
+    </article>
+
+    <article class="card">
+      <h3>硬件测试工程师</h3>
+      <p class="salary">10-16K</p>
+      <p class="meta">云栖智造<i>|</i>100-499 人<i>|</i>宁波<i>|</i>1-3 年</p>
+      <ul class="tags">
+        <li>万用表</li><li>测试报告</li><li>DQA</li>
+      </ul>
+      <div class="bs-badge" data-v="review" title="标题相关但技能命中少，分数落在待看区间">55 待看</div>
+    </article>
+
+    <article class="card">
+      <h3>高级硬件工程师</h3>
+      <p class="salary">20-35K</p>
+      <p class="meta">恒川科技<i>|</i>500-999 人<i>|</i>深圳<i>|</i>5-10 年</p>
+      <ul class="tags">
+        <li>原理图</li><li>PCB</li><li>团队管理</li>
+      </ul>
+      <div class="bs-badge" data-v="reject" title="工作地点与期望不符；经验要求超出画像">31 跳过</div>
+    </article>
+  </div>
+
+  <!-- 悬浮面板：结构与样式对齐 src/content.js 的 UI.mount -->
+  <div class="wrap done">
+    <div class="head">
+      <span class="dot"></span><b>joblens</b>
+      <span class="spacer"></span>
+      <button class="icon" title="折叠">–</button>
+    </div>
+    <div class="body">
+      <div class="stats">
+        <div><em>3</em><span>岗位</span></div>
+        <div><em>1</em><span>推荐</span></div>
+        <div><em>1</em><span>跳过</span></div>
+      </div>
+      <div class="status">扫描完成 · 3 个岗位</div>
+      <div class="actions">
+        <button class="primary">扫描打分</button>
+        <button title="滚到底自动加载下一批">换一批</button>
+      </div>
+      <div class="log">
+        <div class="line"><i>21:03</i><span>读取到 3 个岗位</span></div>
+        <div class="line ok"><i>21:03</i><span>打分完成，标注已写入页面</span></div>
+        <div class="line dim"><i>21:03</i><span>推荐 1 · 待看 1 · 跳过 1</span></div>
+      </div>
+      <div class="foot">
+        <span><a>设置</a><span class="sep">·</span><a>报告</a></span>
+        <span>只读筛选</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="note">
+  <b>说明</b>：本页是纯 HTML 复刻的界面示意，用于 README 配图。<br>
+  面板的配色、字号、间距取自扩展本体 CSS（<code>src/content.js</code> 的 <code>CSS</code> 常量），徽章规则取自 <code>.bs-badge</code>。
+  周围的岗位卡片、公司名、薪资均为虚构示意，<b>不含任何平台标识、真实公司或真实用户数据</b>。<br>
+  生成截图：<code>msedge --headless --screenshot=docs/assets/panel-preview.png --window-size=1200,620 --hide-scrollbars docs/assets/panel-preview.html</code>
+</div>
+
+</body>
+</html>
